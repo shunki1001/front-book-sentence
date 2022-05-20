@@ -8,6 +8,7 @@ import BookFace from './BookFace'
 import pic from '../../static/images/example-book.png'
 import SpeechBubble from './ItemsOfBookComponent/SpeechBubble'
 import MemoComponent from './ItemsOfBookComponent/MemoComponent'
+import { Link } from 'react-router-dom';
 
 // 丸いアイコン
 const circleButtonStyle = {
@@ -38,7 +39,9 @@ const BookComponent = () => {
                 </Box>
                 <Divider orientation='vertical' flexItem sx={{borderWidth:1, borderColor: '#FDFEFF'}} />
                 <Box sx={{width:'6%', textAlign:'center'}}> {/* 36/650=0.055 */}
-                    <IconButton style={circleButtonStyle} onClick={editHandleClick}><EditIcon /></IconButton>
+                    <Link to={"/detailbook"}>
+                        <IconButton style={circleButtonStyle} onClick={editHandleClick}><EditIcon /></IconButton>
+                    </Link>
                     <span style={{fontSize:'10px'}}>編集</span>
                     <IconButton style={circleButtonStyle} onClick={copyHandleClick}><ContentCopyIcon /></IconButton>
                     <span style={{fontSize:'10px'}}>コピー</span>

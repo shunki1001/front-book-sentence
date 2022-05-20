@@ -1,5 +1,3 @@
-import React from 'react'
-
 const BookFace = (props) => {
     const {src, alt} = props;
 

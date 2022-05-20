@@ -16,6 +16,9 @@ const theme = createTheme({
         secondary:{
             main: '#0A0A0A',
         },
+        success:{
+            main:"#1976d2"
+        },
         text:{
             primary: '#FDFEFF',
         },
@@ -52,11 +55,22 @@ const theme = createTheme({
                 },
                 'h6':{
                     fontWeight: 900,
-                    fontSize: '16px'
+                    fontSize: '16px',
+                },
+                'caption':{
+                    opacity:0.5
                 }
             }
         },
-
+        MuiPaper:{
+            styleOverrides:{
+                root:{
+                    '&.MuiDialog-paper':{
+                        backgroundColor:'#FDFEFF'
+                    }
+                }
+            }
+        }
     },
 })
 

@@ -19,7 +19,7 @@ const MySentence = () => {
     <>
     <Header HeaderName="マイセンテンス" addBook="true" />
     <Box sx={{width:'100%', display:'flex', px:'20px'}}>
-      <Search />
+      <Search label="タイトル、引用箇所、著者、メモ" />
       <IconButton sx={{background: '#282826', borderRadius: '10px', mt:2, ml:1, py:0,'&:hover':{backgroundColor: '#282826'}}} onClick={handleClickSort}>
         <SortIcon fontSize='large' />
       </IconButton>

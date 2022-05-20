@@ -4,7 +4,9 @@ import SearchIcon from '@mui/icons-material/Search';
 
 import { useState } from 'react';
 
-const Search = () => {
+const Search = (props) => {
+  const {label} = props;
+
   const [value, setValue] = useState("")
 
   const handleChange = (event)=>{
@@ -15,7 +17,7 @@ const Search = () => {
     <>
     <Box sx={{display: 'flex', width: '80%', backgroundColor: '#262628', alignItems: 'flex-end', borderRadius: 2, mt:2, pr:1 }}>
       <SearchIcon sx={{ color: 'primary', mr: 1, my: 1 }}/>
-      <TextField id='standard-basic' label='タイトル、引用箇所、著者、メモ' variant='standard' focused value={value} onChange={handleChange} fullWidth />
+      <TextField id='standard-basic' label={label} variant='standard' focused value={value} onChange={handleChange} fullWidth />
     </Box>
   </>
   )
