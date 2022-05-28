@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 
 import { Box, Divider, IconButton, Snackbar } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
@@ -8,7 +8,8 @@ import BookFace from "./BookFace";
 import pic from "../../static/images/example-book.png";
 import SpeechBubble from "./ItemsOfBookComponent/SpeechBubble";
 import MemoComponent from "./ItemsOfBookComponent/MemoComponent";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { DataContext } from "../../contexts/DataContext";
 
 // 丸いアイコン
 const circleButtonStyle = {
@@ -16,11 +17,16 @@ const circleButtonStyle = {
   borderRadius: "50%",
 };
 
-const BookComponent = () => {
+const BookComponent = (props) => {
   const [openCopy, setOpenCopy] = useState(false);
 
-  const editHandleClick = () => {
-    console.log("編集ボタンクリック");
+  const { setPassId } = useContext(DataContext);
+  const navigate = useNavigate();
+
+  const editHandleClick = (id) => {
+    console.log(id);
+    setPassId(id);
+    navigate("/detailbook", { replace: true });
   };
   const copyHandleClick = () => {
     if (!navigator.clipboard) {
@@ -60,7 +66,7 @@ const BookComponent = () => {
         <Box sx={{ width: "38%", ml: 4, my: 1 }}>
           {" "}
           {/* 250/650=0.384 */}
-          <SpeechBubble content="prop-test" />
+          <SpeechBubble content={props.sentence.quote_sentence} />
         </Box>
         <Divider
           orientation="vertical"
@@ -70,7 +76,7 @@ const BookComponent = () => {
         <Box sx={{ width: "38%" }}>
           {" "}
           {/* 250/650=0.384 */}
-          <MemoComponent />
+          <MemoComponent content={props.sentence.memo} />
         </Box>
         <Divider
           orientation="vertical"
@@ -80,11 +86,12 @@ const BookComponent = () => {
         <Box sx={{ width: "6%", textAlign: "center" }}>
           {" "}
           {/* 36/650=0.055 */}
-          <Link to={"/detailbook"}>
-            <IconButton style={circleButtonStyle} onClick={editHandleClick}>
-              <EditIcon />
-            </IconButton>
-          </Link>
+          <IconButton
+            style={circleButtonStyle}
+            onClick={() => editHandleClick(props.sentence.sentence_id)}
+          >
+            <EditIcon />
+          </IconButton>
           <span style={{ fontSize: "10px" }}>編集</span>
           <IconButton style={circleButtonStyle} onClick={copyHandleClick}>
             <ContentCopyIcon />

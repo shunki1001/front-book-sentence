@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 
 import { Box, IconButton } from "@mui/material";
 import SortIcon from "@mui/icons-material/Sort";
@@ -7,9 +7,12 @@ import Header from "./components/Header";
 import Search from "./components/Search";
 import BookComponent from "./components/BookComponent";
 import SortList from "./components/SortList";
+import { AuthContext } from "../contexts/AuthContext";
 
 const MySentence = () => {
   const [openSort, setOpenSort] = useState(false);
+
+  const { sentenceList } = useContext(AuthContext);
 
   const handleClickSort = () => {
     setOpenSort(!openSort);
@@ -37,10 +40,9 @@ const MySentence = () => {
       {openSort && (
         <SortList setOpenSort={setOpenSort} handleClickSort={handleClickSort} />
       )}
-      <BookComponent />
-      <BookComponent />
-      <BookComponent />
-      <BookComponent />
+      {sentenceList.info.map((sentence, index) => {
+        return <BookComponent sentence={sentence} key={index} />;
+      })}
     </>
   );
 };

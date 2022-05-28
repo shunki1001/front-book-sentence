@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 
 import {
   Box,
@@ -20,15 +20,15 @@ import pic from "../static/images/example-book.png";
 import UploadLabel from "./components/UploadLabel";
 import CropperComponent from "../cropper/CropperComponent";
 import BeforeRegistModalContent from "./components/BeforeRegistModalContent";
+import { DataContext } from "../contexts/DataContext";
+import axios from "axios";
 
 const DetailBook = () => {
+  const { editingSentence, baseUrl } = useContext(DataContext);
+
   // データ
-  const [sentence, setSentence] = useState(
-    "“スタートアップとは科学のように試行錯誤するものである。だからして経験談に基づく偶発的な思考をすることは非常に愚かだといわざるを得ない。"
-  );
-  const [memo, setMemo] = useState(
-    "メモをここに表示します。メモをここに表示します。メモをここに表示します。メモをここに表示します。メモをここに表示します。メモをここに表示します。"
-  );
+  const [sentence, setSentence] = useState(editingSentence[0].quote_sentence);
+  const [memo, setMemo] = useState(editingSentence[0].memo);
   const [tag, setTag] = useState("#ビジネス #起業 #名言 ");
 
   // 画像アップロード
@@ -63,6 +63,9 @@ const DetailBook = () => {
   useEffect(() => {
     if (renderFlagRef.current) {
       // 画像が切り抜かれたら、画像解析APIを叩いて、コンテンツの文字をゲット
+      axios.post(`${baseUrl.tool}/character-reader`, {
+        image: croppedData,
+      });
       console.log("画像解析APIを叩くよ");
     } else {
       console.log("useEffectはまだ動かないよ");
