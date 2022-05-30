@@ -8,7 +8,7 @@ import BookFace from "./BookFace";
 import pic from "../../static/images/example-book.png";
 import SpeechBubble from "./ItemsOfBookComponent/SpeechBubble";
 import MemoComponent from "./ItemsOfBookComponent/MemoComponent";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { DataContext } from "../../contexts/DataContext";
 
 // 丸いアイコン
@@ -61,7 +61,7 @@ const BookComponent = (props) => {
         <Box sx={{ width: "9%", pl: 1, my: 4 }}>
           {" "}
           {/* 45/650=0.069 */}
-          <BookFace src={pic} />
+          <BookFace src={props.sentence.imageUrl} />
         </Box>
         <Box sx={{ width: "38%", ml: 4, my: 1 }}>
           {" "}

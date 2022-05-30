@@ -22,9 +22,11 @@ import CropperComponent from "../cropper/CropperComponent";
 import BeforeRegistModalContent from "./components/BeforeRegistModalContent";
 import { DataContext } from "../contexts/DataContext";
 import axios from "axios";
+import { AuthContext } from "../contexts/AuthContext";
 
 const DetailBook = () => {
-  const { editingSentence, baseUrl } = useContext(DataContext);
+  const { editingSentence } = useContext(DataContext);
+  const { baseUrl } = useContext(AuthContext);
 
   // データ
   const [sentence, setSentence] = useState(editingSentence[0].quote_sentence);

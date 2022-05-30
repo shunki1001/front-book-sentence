@@ -1,6 +1,6 @@
 import React from "react";
 
-import { AppBar, IconButton, Toolbar, Typography } from "@mui/material";
+import { IconButton, Toolbar, Typography } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import PersonIcon from "@mui/icons-material/Person";
 import BookmarkAddIcon from "@mui/icons-material/BookmarkAdd";
