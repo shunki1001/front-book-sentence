@@ -24,14 +24,14 @@ export const CropperComponent = (props) => {
   };
   onChangeProps(props.src);
 
-  const getCropData = () => {
+  const getCropData = async () => {
     if (typeof cropper !== "undefined") {
       setCropData(cropper.getCroppedCanvas().toDataURL("image/png"));
       // Base64からバイナリへ変換
-      var bin = Buffer.from(cropData.replace(/^.*,/, ""), "base64");
+      let bin = Buffer.from(cropData.replace(/^.*,/, ""), "base64");
       //   var bin = atob(cropData.replace(/^.*,/, ""));
-      var buffer = new Uint8Array(bin.length);
-      for (var i = 0; i < bin.length; i++) {
+      let buffer = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) {
         buffer[i] = bin.charCodeAt(i);
       }
 
@@ -40,13 +40,16 @@ export const CropperComponent = (props) => {
       let filename = dt.toLocaleString().replace(/\/| |:/g, "");
 
       //バイナリでファイルを作る
-      var file = new File([buffer.buffer], filename + ".png", {
+      let file = new File([buffer.buffer], filename + ".png", {
         type: "image/png",
       });
 
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       //   var formData = new FormData();
       //   formData.append("image", file);
       props.setCroppedData(file);
+      console.log(file);
+      console.log(typeof buffer);
       props.setCropModal(false);
     }
   };

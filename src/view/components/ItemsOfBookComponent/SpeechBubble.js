@@ -26,48 +26,62 @@ const babbleStyle = {
 
 const SpeechBubble = (props) => {
   const { content } = props;
-  // 残項目：メモ内容が短いときは全表示。
-  // 長い場合は、前と後ろに分けて、表示非表示の切り替えができるように。
+  const indexShownString = 70;
 
   const [openContent, setOpenContent] = useState(false);
 
   const handleClick = () => {
     setOpenContent(!openContent);
   };
-  return (
-    <Box sx={babbleStyle}>
-      <div
-        style={{
-          overflowWrap: "break-word",
-          paddingBottom: "8px",
-          position: "relative",
-        }}
-      >
-        {content}
-        {openContent === true ? (
-          <>
-            い。引用をここに表示します。引用をここに表示します。引用をここに表示します。引用をここに表示します。引用をここに表示します。
-          </>
-        ) : (
-          <>
-            ...
-            <Overlay styleFor="content" />
-          </>
-        )}
-        <span style={{ position: "absolute", bottom: 0, right: 0 }}>
+
+  if (content.length < 70) {
+    return (
+      <Box sx={babbleStyle}>
+        <div
+          style={{
+            overflowWrap: "break-word",
+            paddingBottom: "8px",
+            position: "relative",
+          }}
+        >
+          {content}
+        </div>
+      </Box>
+    );
+  } else {
+    return (
+      <Box sx={babbleStyle}>
+        <div
+          style={{
+            overflowWrap: "break-word",
+            paddingBottom: "8px",
+            position: "relative",
+          }}
+        >
+          {content.slice(0, indexShownString)}
           {openContent === true ? (
-            <IconButton onClick={handleClick} sx={{ px: 0, zIndex: 20 }}>
-              <ExpandLessIcon />
-            </IconButton>
+            <>{content.slice(indexShownString)}</>
           ) : (
-            <IconButton onClick={handleClick} sx={{ px: 0, zIndex: 20 }}>
-              <ExpandMoreIcon />
-            </IconButton>
+            <>
+              ...
+              <Overlay styleFor="content" />
+            </>
           )}
-        </span>
-      </div>
-    </Box>
-  );
+          <span style={{ position: "absolute", bottom: 0, right: 0 }}>
+            {openContent === true ? (
+              <IconButton onClick={handleClick} sx={{ px: 0, zIndex: 20 }}>
+                <ExpandLessIcon />
+              </IconButton>
+            ) : (
+              <IconButton onClick={handleClick} sx={{ px: 0, zIndex: 20 }}>
+                <ExpandMoreIcon />
+              </IconButton>
+            )}
+          </span>
+        </div>
+      </Box>
+    );
+  }
 };
 
 export default SpeechBubble;

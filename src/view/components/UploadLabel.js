@@ -1,11 +1,12 @@
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import { Box, Button, Dialog, Typography } from "@mui/material";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import Scanner from "../../scanner/Scanner";
 import "../../scanner/scanner.css";
+import noimage from "../../static/images/noimage2.png";
 
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { DataContext, rakutenApi } from "../../contexts/DataContext";
 
 const UploadLabelStyle = {
   width: "200px",
@@ -33,24 +34,51 @@ const UploadLabel = (props) => {
 
 export default UploadLabel;
 
-// ISBNバーコードリーダー
-const baseURL =
-  "https://app.rakuten.co.jp/services/api/BooksBook/Search/20170404?applicationId=1029970387718010374";
+let bookName = "";
+let authorName = "";
+let image = "";
 
-export const BarcodeReaderLabel = (props) => {
+export const UploadLabelByBarcode = (props) => {
   const [camera, setCamera] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
   const [result, setResult] = useState(null);
 
-  const [bookName, setBookName] = useState("");
-  const [authorName, setAuthorName] = useState("");
-  const [image, setImage] = useState("");
+  const { flagWhereFrom, setIsbnResult } = useContext(DataContext);
 
   const navigate = useNavigate();
 
   const onDetected = (result) => {
     setResult(result);
     setCamera(false);
+    // tempResult = result;
+    // setTimeout(() => {
+    //   if (tempResult.length === 13) {
+    //     // 精度を上げるために日本の書籍に限定
+    //     if (tempResult.slice(0, 4) === 9784) {
+    //       console.log(tempResult);
+    //       setResult(tempResult);
+    //       setCamera(false);
+    //       setInfoOpen(true);
+    //     }
+    //   }
+    // }, 500);
+  };
+
+  const getRakutenISBN = async (readISBN) => {
+    const res = await rakutenApi(readISBN).catch((error) => {
+      alert("書籍情報の取得に失敗しました");
+    });
+    if (res.data.Items.length == 0) {
+      alert("書籍情報がないため、情報なしとして登録してください");
+      authorName = "情報なし";
+      bookName = "情報なし";
+      image = noimage;
+    } else {
+      authorName = res.data.Items[0].Item.author;
+      bookName = res.data.Items[0].Item.title;
+      image = res.data.Items[0].Item.mediumImageUrl;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 500));
     setInfoOpen(true);
   };
 
@@ -58,17 +86,16 @@ export const BarcodeReaderLabel = (props) => {
   const renderFlagRef = useRef(false);
   useEffect(() => {
     if (renderFlagRef.current) {
-      axios
-        .get(baseURL + "&isbn=9784822259754")
-        .then((res) => {
-          setAuthorName(res.data.Items[0].Item.author);
-          setBookName(res.data.Items[0].Item.title);
-          setImage(res.data.Items[0].Item.mediumImageUrl);
-        })
-        .catch((error) => {
-          alert("送信できませんでした");
-          console.log(error);
-        });
+      if (result.length == 13 && result.slice(0, 4) == "9784") {
+        getRakutenISBN(result);
+        console.log(result);
+      } else {
+        alert(
+          "9784で始まるバーコードのみ読み取られるようにして、もう一度試してみてください"
+        );
+        setCamera(true);
+        setInfoOpen(false);
+      }
     } else {
       console.log("useEffectはまだ動かないよ");
       renderFlagRef.current = true;
@@ -82,8 +109,17 @@ export const BarcodeReaderLabel = (props) => {
     setInfoOpen(false);
   };
 
-  const handleClickOk = () => {
+  const handleClickOk = async () => {
     console.log("OKボタン");
+    setIsbnResult({
+      author: authorName,
+      title: bookName,
+      imageUrl: image,
+      isbn: result,
+    });
+    console.log(authorName);
+    flagWhereFrom("fromIsbn");
+    await new Promise((resolve) => setTimeout(resolve, 500));
     navigate("/detailbook");
     setInfoOpen(false);
   };
@@ -106,7 +142,7 @@ export const BarcodeReaderLabel = (props) => {
           <Typography>こちらの書籍で正しいですか？</Typography>
           <Typography>書籍名：{bookName}</Typography>
           <Typography>著者名：{authorName}</Typography>
-          <img src={image} alt="表紙" />
+          <img src={image} alt="表紙" style={{ width: "120px" }} />
           <Box sx={{ display: "flex" }}>
             <Button
               sx={{ width: "50%", borderColor: "#FDFEFF" }}

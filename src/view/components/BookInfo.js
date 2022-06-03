@@ -1,7 +1,6 @@
 import { Box, Typography } from "@mui/material";
 
 import BookFace from "./BookFace";
-import pic from "../../static/images/example-book.png";
 
 const BookInfo = (props) => {
   return (
@@ -9,12 +8,12 @@ const BookInfo = (props) => {
       <Box sx={{ width: "13%", mx: 2 }}>
         {" "}
         {/* 45/(375-20*2)=0.134 */}
-        <BookFace src={pic} />
-        {/* <BookFace src={props.sentence.author} /> */}
+        {/* <BookFace src={pic} /> */}
+        <BookFace src={props.sentence.imageUrl} />
       </Box>
-      <Box sx={{ my: 1 }}>
-        <Typography variant="h6">起業の科学{props.sentence.title}</Typography>
-        <Typography variant="p">田所雅之{props.sentence.memo}</Typography>
+      <Box sx={{ my: 1, width: "67%" }}>
+        <Typography variant="h6">{props.sentence.title}</Typography>
+        <Typography variant="p">{props.sentence.author}</Typography>
       </Box>
     </Box>
   );

@@ -8,8 +8,7 @@ import Overlay from "./Overlay";
 
 const MemoComponent = (props) => {
   const { content } = props;
-  // 残項目：メモ内容が短いときは全表示。
-  // 長い場合は、前と後ろに分けて、表示非表示の切り替えができるように。
+  const indexShownString = 70;
 
   const [memoOpen, setMemoOpen] = useState(false);
 
@@ -17,43 +16,60 @@ const MemoComponent = (props) => {
     setMemoOpen(!memoOpen);
   };
 
-  return (
-    <>
-      <Typography variant="h6">Memo</Typography>
-      <div
-        style={{
-          overflowWrap: "break-word",
-          paddingBottom: "8px",
-          paddingTop: "8px",
-          position: "relative",
-          width: "100%",
-        }}
-      >
-        {content}
-        {memoOpen === true ? (
-          <>
-            ここに残す。メモをここに残す。メモをここに残す。メモをここに残す。メモをここに残す。
-          </>
-        ) : (
-          <>
-            ...
-            <Overlay props="memo" />
-          </>
-        )}
-        <span style={{ position: "absolute", bottom: 0, right: 0 }}>
+  if (content.length < 70) {
+    return (
+      <>
+        <Typography variant="h6">Memo</Typography>
+        <div
+          style={{
+            overflowWrap: "break-word",
+            paddingBottom: "8px",
+            paddingTop: "8px",
+            position: "relative",
+            width: "100%",
+          }}
+        >
+          {content}
+        </div>
+      </>
+    );
+  } else {
+    return (
+      <>
+        <Typography variant="h6">Memo</Typography>
+        <div
+          style={{
+            overflowWrap: "break-word",
+            paddingBottom: "8px",
+            paddingTop: "8px",
+            position: "relative",
+            width: "100%",
+          }}
+        >
+          {content.slice(0, indexShownString)}
           {memoOpen === true ? (
-            <IconButton onClick={handleClick} sx={{ px: 0, zIndex: 20 }}>
-              <ExpandLessIcon />
-            </IconButton>
+            <>{content.slice(indexShownString)}</>
           ) : (
-            <IconButton onClick={handleClick} sx={{ px: 0, zIndex: 20 }}>
-              <ExpandMoreIcon />
-            </IconButton>
+            <>
+              ...
+              <Overlay props="memo" />
+            </>
           )}
-        </span>
-      </div>
-    </>
-  );
+          <span style={{ position: "absolute", bottom: 0, right: 0 }}>
+            {memoOpen === true ? (
+              <IconButton onClick={handleClick} sx={{ px: 0, zIndex: 20 }}>
+                <ExpandLessIcon />
+              </IconButton>
+            ) : (
+              <IconButton onClick={handleClick} sx={{ px: 0, zIndex: 20 }}>
+                <ExpandMoreIcon />
+              </IconButton>
+            )}
+          </span>
+        </div>
+      </>
+    );
+  }
 };
 
 export default MemoComponent;

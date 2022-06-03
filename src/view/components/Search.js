@@ -2,15 +2,11 @@ import { TextField } from "@mui/material";
 import { Box } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 
-import { useState } from "react";
-
 const Search = (props) => {
-  const { label } = props;
-
-  const [value, setValue] = useState("");
+  const { label, searchValue, setSearchValue } = props;
 
   const handleChange = (event) => {
-    setValue(event.target.value);
+    setSearchValue(event.target.value);
   };
 
   return (
@@ -32,7 +28,7 @@ const Search = (props) => {
           label={label}
           variant="standard"
           focused
-          value={value}
+          value={searchValue}
           onChange={handleChange}
           fullWidth
         />

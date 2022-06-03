@@ -5,7 +5,6 @@ import EditIcon from "@mui/icons-material/Edit";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 
 import BookFace from "./BookFace";
-import pic from "../../static/images/example-book.png";
 import SpeechBubble from "./ItemsOfBookComponent/SpeechBubble";
 import MemoComponent from "./ItemsOfBookComponent/MemoComponent";
 import { useNavigate } from "react-router-dom";
@@ -20,19 +19,21 @@ const circleButtonStyle = {
 const BookComponent = (props) => {
   const [openCopy, setOpenCopy] = useState(false);
 
-  const { setPassId } = useContext(DataContext);
+  const { setPassId, flagWhereFrom } = useContext(DataContext);
   const navigate = useNavigate();
 
-  const editHandleClick = (id) => {
+  const editHandleClick = async (id) => {
     console.log(id);
     setPassId(id);
+    flagWhereFrom("fromMy");
+    await new Promise((resolve) => setTimeout(resolve, 500));
     navigate("/detailbook", { replace: true });
   };
   const copyHandleClick = () => {
     if (!navigator.clipboard) {
       alert("このブラウザは対応していません");
     } else {
-      navigator.clipboard.writeText("テストテキストをコピーしました");
+      navigator.clipboard.writeText(props.sentence.quote_sentence);
       setOpenCopy(true);
     }
   };
@@ -40,7 +41,6 @@ const BookComponent = (props) => {
     if (reason === "clickaway") {
       return;
     }
-
     setOpenCopy(false);
   };
 
@@ -102,7 +102,7 @@ const BookComponent = (props) => {
       <Snackbar
         open={openCopy}
         onClose={handleCloseCopy}
-        message="Copied!"
+        message="センテンスをコピー"
         autoHideDuration={5000}
       />
     </div>

@@ -1,5 +1,8 @@
 import { useState, useEffect, useRef, useContext } from "react";
 
+import Tags from "@yaireo/tagify/dist/react.tagify"; // React-wrapper file
+import "@yaireo/tagify/dist/tagify.css"; // Tagify CSS
+
 import {
   Box,
   Divider,
@@ -12,11 +15,10 @@ import {
 } from "@mui/material";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import Header from "./components/Header";
 import BookFace from "./components/BookFace";
-import pic from "../static/images/example-book.png";
 import UploadLabel from "./components/UploadLabel";
 import CropperComponent from "../cropper/CropperComponent";
 import BeforeRegistModalContent from "./components/BeforeRegistModalContent";
@@ -24,14 +26,63 @@ import { DataContext } from "../contexts/DataContext";
 import axios from "axios";
 import { AuthContext } from "../contexts/AuthContext";
 
-const DetailBook = () => {
-  const { editingSentence } = useContext(DataContext);
-  const { baseUrl } = useContext(AuthContext);
+// 楽天APIからの書籍情報を一時的に格納する変数
+let InfoBook = {};
+let tagList = [];
 
-  // データ
-  const [sentence, setSentence] = useState(editingSentence[0].quote_sentence);
-  const [memo, setMemo] = useState(editingSentence[0].memo);
-  const [tag, setTag] = useState("#ビジネス #起業 #名言 ");
+const DetailBook = () => {
+  const { editingSentence, isbnResult, checkFlag } = useContext(DataContext);
+  const { baseUrl, token, userid, updateItem, setUpdateItem } =
+    useContext(AuthContext);
+
+  const navigate = useNavigate();
+
+  const [sentence, setSentence] = useState({});
+
+  // どこのページから遷移してきたかで初期値を設定
+  useEffect(() => {
+    if (checkFlag.current === 1) {
+      setSentence({
+        title: editingSentence[0].title,
+        author: editingSentence[0].author,
+        imageUrl: editingSentence[0].imageUrl,
+        quote_sentence: editingSentence[0].quote_sentence,
+        isbn: editingSentence[0].isbn,
+        memo: editingSentence[0].memo,
+        tags: editingSentence[0].tags.map((item) => item.tag),
+        commentary: "コメント",
+        release_flg: "1",
+      });
+      tagList = editingSentence[0].tags.map((item) => item.tag);
+      InfoBook = {
+        title: editingSentence[0].title,
+        author: editingSentence[0].author,
+        imageUrl: editingSentence[0].imageUrl,
+      };
+    } else if (checkFlag.current === 2) {
+      console.log(isbnResult);
+      setSentence({
+        title: isbnResult.title,
+        author: isbnResult.author,
+        imageUrl: isbnResult.imageUrl,
+        quote_sentence: "",
+        memo: "",
+        tags: [],
+        isbn: isbnResult.isbn,
+        commentary: "コメント",
+        release_flg: "1",
+      });
+      tagList = [];
+      InfoBook = {
+        title: isbnResult.title,
+        author: isbnResult.author,
+        imageUrl: isbnResult.imageUrl,
+      };
+      console.log(InfoBook);
+    } else {
+      navigate("/mysentence", { replace: true });
+    }
+  }, []);
 
   // 画像アップロード
   const [postFileData, setPostFileData] = useState();
@@ -42,8 +93,78 @@ const DetailBook = () => {
   const [cameraModal, setCameraModal] = useState(false);
   const [cropModal, setCropModal] = useState(false);
 
-  const handleClickOpenSendModal = () => {
-    setOpen(true);
+  // 送信時の挙動
+  const handleClickOpenSendModal = async () => {
+    let sendData = { ...sentence, tags: tagList };
+    if (checkFlag.current === 1) {
+      console.log(InfoBook);
+      await axios
+        .patch(
+          `${baseUrl.sentence}/${editingSentence[0].sentence_id}/update`,
+          sendData,
+          {
+            headers: {
+              "X-CSRF-ACCESS-TOKEN": token,
+            },
+            withCredentials: true,
+          }
+        )
+        .then((res) => {
+          setOpen(true);
+          console.log(res.data.info);
+          setUpdateItem({
+            ...res.data.info,
+            title: editingSentence[0].title,
+            author: editingSentence[0].author,
+            imageUrl: editingSentence[0].imageUrl,
+          });
+        })
+        .catch((err) => alert("登録できませんでした"));
+    } else if (checkFlag.current === 2) {
+      console.log("ISBNから");
+      console.log(InfoBook);
+      await axios
+        .post(
+          `${baseUrl.sentence}/regist`,
+          { ...sendData, user_id: userid },
+          {
+            headers: {
+              "X-CSRF-ACCESS-TOKEN": token,
+            },
+            withCredentials: true,
+          }
+        )
+        .then((res) => {
+          setOpen(true);
+          console.log(res.data.info);
+          setUpdateItem({
+            ...res.data.info,
+            title: isbnResult.title,
+            author: isbnResult.author,
+            imageUrl: isbnResult.imageUrl,
+          });
+        })
+        .catch((err) => alert("登録できませんでした"));
+    } else {
+      console.log("連続投稿");
+      await axios
+        .post(
+          `${baseUrl.sentence}/regist`,
+          { ...sendData, user_id: userid },
+          {
+            headers: {
+              "X-CSRF-ACCESS-TOKEN": token,
+            },
+            withCredentials: true,
+          }
+        )
+        .then((res) => {
+          setOpen(true);
+          console.log(res.data.info);
+          setUpdateItem({ ...res.data.info, ...InfoBook });
+        })
+        .catch((err) => alert("登録できませんでした"));
+    }
   };
   const handleClose = () => {
     setOpen(false);
@@ -65,9 +186,17 @@ const DetailBook = () => {
   useEffect(() => {
     if (renderFlagRef.current) {
       // 画像が切り抜かれたら、画像解析APIを叩いて、コンテンツの文字をゲット
-      axios.post(`${baseUrl.tool}/character-reader`, {
-        image: croppedData,
-      });
+      axios.post(
+        `${baseUrl.tool}/character-reader`,
+        {
+          image: croppedData,
+        },
+        {
+          headers: {
+            "X-CSRF-ACCESS-TOKEN": token,
+          },
+        }
+      );
       console.log("画像解析APIを叩くよ");
     } else {
       console.log("useEffectはまだ動かないよ");
@@ -92,11 +221,11 @@ const DetailBook = () => {
         <Box sx={{ width: "13%", mx: 2 }}>
           {" "}
           {/* 45/(375-20*2)=0.134 */}
-          <BookFace src={pic} />
+          <BookFace src={sentence.imageUrl} />
         </Box>
         <Box sx={{ my: 1, maxWidth: "195px" }} flexGrow={1}>
-          <Typography variant="h6">起業の科学</Typography>
-          <Typography variant="p">田所雅之</Typography>
+          <Typography variant="h6">{sentence.title}</Typography>
+          <Typography variant="p">{sentence.author}</Typography>
         </Box>
         <Box
           sx={{
@@ -124,8 +253,10 @@ const DetailBook = () => {
           id="sentenceForm"
           fullWidth
           multiline
-          value={sentence}
-          onChange={(evt) => setSentence(evt.target.value)}
+          value={sentence.quote_sentence}
+          onChange={(evt) =>
+            setSentence({ ...sentence, quote_sentence: evt.target.value })
+          }
         />
         <Divider variant="middle" />
         <Typography variant="caption">メモ</Typography>
@@ -133,17 +264,20 @@ const DetailBook = () => {
           id="memoForm"
           fullWidth
           multiline
-          value={memo}
-          onChange={(evt) => setMemo(evt.target.value)}
+          value={sentence.memo}
+          onChange={(evt) =>
+            setSentence({ ...sentence, memo: evt.target.value })
+          }
         />
         <Divider variant="middle" />
         <Typography variant="caption">タグ</Typography>
-        <TextField
-          id="tagForm"
-          fullWidth
-          multiline
-          value={tag}
-          onChange={(evt) => setTag(evt.target.value)}
+        <Tags
+          defaultValue={tagList}
+          onChange={(e) => {
+            tagList = e.detail.tagify.value.map((item) => {
+              return item.value;
+            });
+          }}
         />
         <Divider variant="middle" />
       </Box>
@@ -167,14 +301,9 @@ const DetailBook = () => {
         </Link>
       </Box>
 
-      {/* 送信前ダイアログ */}
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        fullWidth
-        sx={{ textAlign: "center" }}
-      >
-        <BeforeRegistModalContent />
+      {/* 送信後ダイアログ */}
+      <Dialog open={open} fullWidth sx={{ textAlign: "center" }}>
+        <BeforeRegistModalContent setOpen={setOpen} />
       </Dialog>
 
       {/* カメラアップロードダイアログ */}
