@@ -5,6 +5,7 @@ import {
   TextField,
   Typography,
   Link,
+  Snackbar,
 } from "@mui/material";
 import { useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
@@ -20,13 +21,12 @@ const SigninTextField = styled(TextField)({
 });
 
 const Signin = () => {
-  const { isAuth, login, tryLogin } = useContext(AuthContext);
+  const { login, tryLogin, loading, setLoading } = useContext(AuthContext);
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     // ユーザー情報取得APIをたたく
-    console.log();
     // 成功レスポンスが返ってきたら、
     login(data.get("email"), data.get("password"));
   };
@@ -75,8 +75,12 @@ const Signin = () => {
       <Link href="/signup" variant="body2">
         {"Sign Up"}
       </Link>
+      <Snackbar
+        open={loading}
+        onClose={() => setLoading(false)}
+        message="ログイン成功。書籍情報を読み込んでいます。このままお待ちください。"
+      />
     </Box>
   );
 };
-
 export default Signin;

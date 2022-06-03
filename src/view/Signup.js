@@ -15,6 +15,7 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 
 import Header from "./components/Header";
+import axios from "axios";
 
 // カスタムデザイン
 const SignupTextField = styled(TextField)({
@@ -59,9 +60,13 @@ const Signup = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
+    axios.post("/book-sentence-api/api/user/regist", {
+      mail_addr: data.get("email"),
       password: data.get("password"),
+      name: data.get("name"),
+      birth: `${birthday.year}/${birthday.month}/${birthday.date}`,
+      income: Number(data.get("income")),
+      profession: data.get("job"),
     });
     setSuccessModalOpen(true);
   };
@@ -226,11 +231,9 @@ const Signup = () => {
         fullWidth
         sx={{ textAlign: "center" }}
       >
-        <DialogTitle color="secondary">
-          確認用のメールを送信しました！
-        </DialogTitle>
+        <DialogTitle>確認用のメールを送信しました！</DialogTitle>
         <Box sx={{ mx: 3, "& button": { my: 1 } }}>
-          <Typography color="secondary" sx={{ mb: 3 }}>
+          <Typography sx={{ mb: 3 }}>
             これを行うにはメールの確認が必要です。メール受信箱を確認して説明に従ってください。メールは以下のメールアドレスへ送信されました。
           </Typography>
           <Link to="/mysentence" style={{ textDecoration: "none" }}>
@@ -245,7 +248,6 @@ const Signup = () => {
           </Link>
           <Button
             variant="outlined"
-            color="secondary"
             fullWidth
             sx={{ borderRadius: "10px" }}
             onClick={handleClose}
