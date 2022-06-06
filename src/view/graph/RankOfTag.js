@@ -8,12 +8,12 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 const colorData = (tagApi) => {
   let len = tagApi.length;
   const defaultColor = [
-    "rgba(255, 99, 132, 0.2)",
-    "rgba(54, 162, 235, 0.2)",
-    "rgba(255, 206, 86, 0.2)",
-    "rgba(75, 192, 192, 0.2)",
-    "rgba(153, 102, 255, 0.2)",
-    "rgba(255, 159, 64, 0.2)",
+    "rgba(255, 99, 132, 0.7)",
+    "rgba(54, 162, 235, 0.7)",
+    "rgba(255, 206, 86, 0.7)",
+    "rgba(75, 192, 192, 0.7)",
+    "rgba(153, 102, 255, 0.7)",
+    "rgba(255, 159, 64, 0.7)",
   ];
   let exportColor = [];
   for (let i = 0; i < len; i++) {
@@ -30,6 +30,7 @@ const data = (tagApi) => {
         label: "Tag Ranking",
         data: tagApi.map((item) => item.count),
         backgroundColor: colorData(tagApi),
+        borderWidth: 0,
       },
     ],
   };
