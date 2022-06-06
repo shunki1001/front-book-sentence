@@ -22,6 +22,7 @@
     "quagga": "^0.12.1",
     "quagga-scanner": "^0.13.0",
     "react": "^18.1.0",
+    "react-chartjs-2": "^4.1.0",
     "react-cookie": "^4.1.1",
     "react-cropper": "^2.1.8",
     "react-dom": "^18.1.0",

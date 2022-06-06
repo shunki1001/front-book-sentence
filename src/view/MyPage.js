@@ -54,7 +54,7 @@ function a11yProps(index) {
 
 const MyPage = () => {
   const [value, setValue] = useState(1);
-  const { logout } = useContext(AuthContext);
+  const { logout, sentenceList, loading } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleChange = (event, newValue) => {
@@ -109,7 +109,7 @@ const MyPage = () => {
               }}
             >
               <Typography align="center">センテンス数</Typography>
-              <Typography align="center">17</Typography>
+              <Typography align="center">{sentenceList.length}</Typography>
             </Box>
             {/* お気に入りの3冊 */}
             <Box sx={{ flexGrow: 1, border: "2px solid #707070", px: "16px" }}>
@@ -128,10 +128,10 @@ const MyPage = () => {
             </Box>
           </Box>
           {/* 読書傾向 */}
-          <Typography>読書傾向</Typography>
+          <Typography sx={{ my: 1 }}>読書傾向</Typography>
           <TendencyOfBook />
           {/* タグランキング */}
-          <Typography>タグランキング</Typography>
+          <Typography sx={{ my: 1 }}>タグランキング</Typography>
           <RankOfTag />
         </TabPanel>
       </Box>

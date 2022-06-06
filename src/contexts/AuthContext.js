@@ -123,7 +123,7 @@ const AuthContextProvider = (props) => {
     user: "/book-sentence-api/api/user",
     sentence: "/book-sentence-api/api/sentence",
     tool: "/book-sentence-api/tools",
-    analysis: "/book-sentence-api/analysis",
+    analysis: "/book-sentence-api/api/analysis",
     auth: "/book-sentence-api/auth",
   };
   // ログイン情報
@@ -138,6 +138,7 @@ const AuthContextProvider = (props) => {
   // センテンス情報格納
   const [sentenceList, setSentenceList] = useState([]);
   const [updateItem, setUpdateItem] = useState({});
+  const [tagApi, setTagApi] = useState([]);
 
   // リダイレクト
   const navigate = useNavigate();
@@ -304,6 +305,7 @@ const AuthContextProvider = (props) => {
     }
   }, [userid]);
 
+  // updateされた時に、リストにアップデート項目
   useEffect(() => {
     // updateの場合、sentence_idはレスポンスにない
     // 逆に登録の場合、sentence_idをもっているから、リストに追加
@@ -311,6 +313,24 @@ const AuthContextProvider = (props) => {
       setSentenceList([...sentenceList, updateItem]);
     }
   }, [updateItem]);
+
+  // タグ使用率
+  const renderFlagRef2 = useRef(false);
+  useEffect(() => {
+    const updateTag = async () => {
+      const updataTagApi = await axios.get(
+        `${baseUrl.analysis}/${userid}/tag-use-rate`,
+        {
+          headers: {
+            "X-CSRF-ACCESS-TOKEN": token,
+          },
+          withCredentials: true,
+        }
+      );
+      setTagApi(updataTagApi.data.info);
+    };
+    updateTag();
+  }, [userid]);
 
   const logout = () => {
     localStorage.removeItem("user");
@@ -330,6 +350,7 @@ const AuthContextProvider = (props) => {
     setLoading,
     updateItem,
     setUpdateItem,
+    tagApi,
   };
 
   return (
