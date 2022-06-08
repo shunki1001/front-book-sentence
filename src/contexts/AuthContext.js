@@ -6,118 +6,6 @@ import noimage from "../static/images/noimage2.png";
 
 export const AuthContext = createContext();
 
-// テスト用
-const testIsbnList = [
-  {
-    user_id: "U0000000079",
-    sentence_id: "S0000000005",
-    quote_sentence: "引用文がここに入る1",
-    commentary: "コメントがここに入る1",
-    memo: "自分用のメモはここに書けるよ！1",
-    isbn: "9784873115658",
-    release_flg: true,
-    date_created: "2022-05-07 18:07:38",
-    tags: [
-      {
-        user_id: "U0000000079",
-        sentence_id: "S0000000011",
-        tag_no: 0,
-        tag: "tag_2",
-      },
-      {
-        user_id: "U0000000079",
-        sentence_id: "S0000000011",
-        tag_no: 1,
-        tag: "tag_1",
-      },
-    ],
-  },
-  {
-    user_id: "U0000000079",
-    sentence_id: "S0000000007",
-    quote_sentence: "引用文がここに入る3",
-    commentary: "コメントがここに入る3",
-    memo: "自分用のメモはここに書けるよ！3",
-    isbn: "9784822259754",
-    release_flg: true,
-    date_created: "2022-05-15 19:08:45",
-    tags: [],
-  },
-];
-
-const testResRakuten = [
-  {
-    author: "ダスティン・ボズウェル/トレバー・フォシェ",
-    title: "リーダブルコード",
-    titleKana: "リーダブルコード",
-    mediumImageUrl:
-      "https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/5658/9784873115658.jpg?_ex=120x120",
-  },
-  {
-    author: "田所　雅之",
-    title: "起業の科学",
-    titleKana: "キギョウノカガク",
-    mediumImageUrl:
-      "https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/9754/9784822259754.jpg?_ex=120x120",
-  },
-  {
-    author: "田所　雅之",
-    title: "起業の科学",
-    titleKana: "キギョウノカガク",
-    mediumImageUrl:
-      "https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/9754/9784822259754.jpg?_ex=120x120",
-  },
-  {
-    author: "田所　雅之",
-    title: "起業の科学",
-    titleKana: "キギョウノカガク",
-    mediumImageUrl:
-      "https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/9754/9784822259754.jpg?_ex=120x120",
-  },
-  {
-    author: "田所　雅之",
-    title: "起業の科学",
-    titleKana: "キギョウノカガク",
-    mediumImageUrl:
-      "https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/9754/9784822259754.jpg?_ex=120x120",
-  },
-  {
-    author: "ダスティン・ボズウェル/トレバー・フォシェ",
-    title: "リーダブルコード",
-    titleKana: "リーダブルコード",
-    mediumImageUrl:
-      "https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/5658/9784873115658.jpg?_ex=120x120",
-  },
-  {
-    author: "ダスティン・ボズウェル/トレバー・フォシェ",
-    title: "リーダブルコード",
-    titleKana: "リーダブルコード",
-    mediumImageUrl:
-      "https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/5658/9784873115658.jpg?_ex=120x120",
-  },
-  {
-    author: "田所　雅之",
-    title: "起業の科学",
-    titleKana: "キギョウノカガク",
-    mediumImageUrl:
-      "https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/9754/9784822259754.jpg?_ex=120x120",
-  },
-  {
-    author: "田所　雅之",
-    title: "起業の科学",
-    titleKana: "キギョウノカガク",
-    mediumImageUrl:
-      "https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/9754/9784822259754.jpg?_ex=120x120",
-  },
-  {
-    author: "田所　雅之",
-    title: "起業の科学",
-    titleKana: "キギョウノカガク",
-    mediumImageUrl:
-      "https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/9754/9784822259754.jpg?_ex=120x120",
-  },
-];
-
 const AuthContextProvider = (props) => {
   const baseUrl = {
     user: "/book-sentence-api/api/user",
@@ -162,9 +50,10 @@ const AuthContextProvider = (props) => {
         setTryLogin(true);
       });
     setUserid(resToken.data.info.user_id);
-    setToken(document.cookie.split(";")[0].split("=")[1]);
-    setRefreshToken(document.cookie.split(";")[1].split("=")[1]);
-    console.log(document.cookie.split(";")[1].split("=")[1]);
+    setToken(document.cookie.match(/csrf_access_token=.{36}/)[0].split("=")[1]);
+    setRefreshToken(
+      document.cookie.match(/csrf_refresh_token=.{36}/)[0].split("=")[1]
+    );
 
     // 初回ログイン時にログインした情報をローカルストレージに保存
     if (!localStorage.getItem("user")) {
@@ -243,30 +132,11 @@ const AuthContextProvider = (props) => {
                   });
                 });
               });
-          }, resIndex * 1000);
+          }, resIndex * 500);
         });
 
-        // 楽天取得（テスト用）
-        // resSentence.data.info.forEach((item, resIndex) => {
-        //   setSentenceList((prevItems) => {
-        //     return prevItems.map((oldItem, itemIndex) => {
-        //       if (resIndex === itemIndex) {
-        //         return {
-        //           ...oldItem,
-        //           author: testResRakuten[itemIndex].author,
-        //           title: testResRakuten[itemIndex].title,
-        //           titleKana: testResRakuten[itemIndex].titleKana,
-        //           imageUrl: testResRakuten[itemIndex].mediumImageUrl,
-        //         };
-        //       } else {
-        //         return { ...oldItem };
-        //       }
-        //     });
-        //   });
-        // });
-
         await new Promise((resolve) =>
-          setTimeout(resolve, resSentence.data.info.length * 1000 + 500)
+          setTimeout(resolve, resSentence.data.info.length * 500 + 500)
         );
         setLoading(false);
 
@@ -280,7 +150,6 @@ const AuthContextProvider = (props) => {
               {
                 headers: {
                   "X-CSRF-REFRESH-TOKEN": localRefreshToken,
-                  "X-CSRF-ACCESS-TOKEN": localToken,
                 },
                 withCredentials: true,
               }
@@ -288,10 +157,12 @@ const AuthContextProvider = (props) => {
             .catch((err) => {
               console.log("アクセストークン更新失敗");
             });
-          localRefreshToken = document.cookie.split(";")[1].split("=")[1];
-          localToken = document.cookie.split(";")[0].split("=")[1];
-
-          setToken(localToken);
+          setToken(
+            document.cookie.match(/csrf_access_token=.{36}/)[0].split("=")[1]
+          );
+          setRefreshToken(
+            document.cookie.match(/csrf_refresh_token=.{36}/)[0].split("=")[1]
+          );
         };
 
         setInterval(getRefreshToken, 1000000);
@@ -317,19 +188,23 @@ const AuthContextProvider = (props) => {
   // タグ使用率
   const renderFlagRef2 = useRef(false);
   useEffect(() => {
-    const updateTag = async () => {
-      const updataTagApi = await axios.get(
-        `${baseUrl.analysis}/${userid}/tag-use-rate`,
-        {
-          headers: {
-            "X-CSRF-ACCESS-TOKEN": token,
-          },
-          withCredentials: true,
-        }
-      );
-      setTagApi(updataTagApi.data.info);
-    };
-    updateTag();
+    if (renderFlagRef2.current == true) {
+      const updateTag = async () => {
+        const updataTagApi = await axios.get(
+          `${baseUrl.analysis}/${userid}/tag-use-rate`,
+          {
+            headers: {
+              "X-CSRF-ACCESS-TOKEN": token,
+            },
+            withCredentials: true,
+          }
+        );
+        setTagApi(updataTagApi.data.info);
+      };
+      updateTag();
+    } else if (renderFlagRef2.current == false) {
+      renderFlagRef2.current = true;
+    }
   }, [userid]);
 
   const logout = () => {

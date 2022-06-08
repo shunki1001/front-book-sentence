@@ -1,10 +1,9 @@
-import { useContext } from "react";
-import { Navigate, Outlet, useLocation } from "react-router-dom";
+import React, { useContext } from "react";
+import { Navigate, Outlet } from "react-router-dom";
 import { AuthContext } from "./contexts/AuthContext";
 
 const ProtectedRoute = () => {
   const { isAuth, setIsAuth } = useContext(AuthContext);
-  const location = useLocation();
 
   if (localStorage.getItem("user")) {
     return <Outlet />;
