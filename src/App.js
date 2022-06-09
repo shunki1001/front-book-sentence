@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import React from "react";
 
 import MainLayout from "./MainLayout";
 import MyPage from "./view/MyPage";

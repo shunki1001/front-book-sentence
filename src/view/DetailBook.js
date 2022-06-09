@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useEffect, useRef, useContext } from "react";
 
 import Tags from "@yaireo/tagify/dist/react.tagify"; // React-wrapper file
