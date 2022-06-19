@@ -132,11 +132,11 @@ const AuthContextProvider = (props) => {
                   });
                 });
               });
-          }, resIndex * 500);
+          }, resIndex * 800);
         });
 
         await new Promise((resolve) =>
-          setTimeout(resolve, resSentence.data.info.length * 500 + 500)
+          setTimeout(resolve, resSentence.data.info.length * 800 + 500)
         );
         setLoading(false);
 
