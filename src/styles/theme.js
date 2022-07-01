@@ -1,7 +1,7 @@
 import React from "react";
 import { createTheme } from "@mui/material/styles";
 
-const fontFamily = [
+export const fontFamily = [
   "Zen Old Mincho",
   "Roboto",
   "Helvetica",

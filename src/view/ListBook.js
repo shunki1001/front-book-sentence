@@ -19,6 +19,7 @@ import BookInfo from "./components/BookInfo";
 import { UploadLabelByBarcode } from "./components/UploadLabel";
 import { AuthContext } from "../contexts/AuthContext";
 import { DataContext } from "../contexts/DataContext";
+// import { rakutenApiKeyword } from "../contexts/DataContext";
 
 const ListBook = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -45,6 +46,11 @@ const ListBook = () => {
     } else {
       setTitleList(titleList);
     }
+    // 楽天のキーワード検索
+    // const rakutenGetKeyword = () => {
+    //   rakutenApiKeyword;
+    // };
+    // rakutenGetKeyword();
   }, [searchValue]);
 
   // データ更新

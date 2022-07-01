@@ -12,6 +12,7 @@ const babbleStyle = {
   display: "inline-block",
   padding: " 5px 0px",
   width: "100%",
+  minHeight: "108px",
   background: "#262628",
   borderRadius: "10px",
   "&::before": {

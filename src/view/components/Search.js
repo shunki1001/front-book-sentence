@@ -1,7 +1,15 @@
 import React from "react";
-import { TextField } from "@mui/material";
 import { Box } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+
+const searchTextareaStyle = {
+  width: "100%",
+  height: "90%",
+  backgroundColor: "transparent",
+  borderWidth: "0px",
+  color: "white",
+  fontFamily: "Zen Old Mincho, Roboto, Helvetica, Arial, sans-serif",
+};
 
 const Search = (props) => {
   const { label, searchValue, setSearchValue } = props;
@@ -24,15 +32,12 @@ const Search = (props) => {
         }}
       >
         <SearchIcon sx={{ color: "primary", mr: 1, my: 1 }} />
-        <TextField
-          id="standard-basic"
-          label={label}
-          variant="standard"
-          focused
+        <input
           value={searchValue}
           onChange={handleChange}
-          fullWidth
-        />
+          placeholder={label}
+          style={searchTextareaStyle}
+        ></input>
       </Box>
     </>
   );

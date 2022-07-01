@@ -13,7 +13,7 @@
     "halfSample": true
   },
   "numOfWorkers": 2,
-  "frequency": 10,
+  "frequency": 1,
   "decoder": {
     "readers": ["ean_reader"]
   },

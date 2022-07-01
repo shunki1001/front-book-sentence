@@ -78,6 +78,9 @@ const DetailBook = () => {
         title: isbnResult.title,
         author: isbnResult.author,
         imageUrl: isbnResult.imageUrl,
+        quote_sentence: "",
+        memo: "",
+        tags: [],
       };
       console.log(InfoBook);
     } else {

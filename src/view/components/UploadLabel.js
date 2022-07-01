@@ -134,6 +134,7 @@ export const UploadLabelByBarcode = (props) => {
       <Button style={UploadLabelStyle} onClick={() => setCamera(!camera)}>
         {camera ? "stop" : "start"}
       </Button>
+      <UploadLabel />
 
       <Dialog open={camera} onClose={handleCloseCamera}>
         <Scanner onDetected={onDetected} />

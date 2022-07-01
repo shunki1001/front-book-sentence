@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   Box,
   Grid,
@@ -10,13 +10,15 @@ import {
   Button,
   Dialog,
   DialogTitle,
+  Snackbar,
 } from "@mui/material";
-import { Link } from "react-router-dom";
 
 import { useState } from "react";
 
 import Header from "./components/Header";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../contexts/AuthContext";
 
 // カスタムデザイン
 const SignupTextField = styled(TextField)({
@@ -49,7 +51,9 @@ for (let i = 1; i <= 31; i++) {
 }
 
 const Signup = () => {
-  const [sex, setSex] = useState("性別");
+  const { login } = useContext(AuthContext);
+
+  const [sex, setSex] = useState("男");
   const [birthday, setBirthday] = useState({
     year: 1990,
     month: 4,
@@ -58,18 +62,33 @@ const Signup = () => {
 
   const [successModal, setSuccessModalOpen] = useState(false);
 
+  const [errorOpen, setErrorOpen] = useState(false);
+
+  // リダイレクト
+  const navigate = useNavigate();
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    axios.post("/book-sentence-api/api/user/regist", {
-      mail_addr: data.get("email"),
-      password: data.get("password"),
-      name: data.get("name"),
-      birth: `${birthday.year}/${birthday.month}/${birthday.date}`,
-      income: Number(data.get("income")),
-      profession: data.get("job"),
-    });
-    setSuccessModalOpen(true);
+    axios
+      .post("/book-sentence-api/api/user/regist", {
+        mail_addr: data.get("email"),
+        password: data.get("password"),
+        name: data.get("name"),
+        birth: `${birthday.year}/${birthday.month}/${birthday.date}`,
+        income: Number(data.get("income")),
+        profession: data.get("job"),
+      })
+      .then(() => {
+        setSuccessModalOpen(true);
+        login(data.get("email"), data.get("password"));
+        setTimeout(() => {
+          navigate("/mysentence", { replace: true });
+        }, 5000);
+      })
+      .catch((err) => {
+        setErrorOpen(true);
+      });
   };
 
   const handleClose = () => {
@@ -205,7 +224,6 @@ const Signup = () => {
             label="年収帯"
             autoComplete="400"
           />
-          <Typography variant="caption">万円</Typography>
           <Box sx={{ textAlign: "center" }}>
             <Typography>
               アカウントを作成すると、サービス利用規約に同意したことになります。
@@ -230,14 +248,14 @@ const Signup = () => {
         open={successModal}
         onClose={handleClose}
         fullWidth
-        sx={{ textAlign: "center" }}
+        sx={{ textAlign: "center", minHeight: "40vh" }}
       >
-        <DialogTitle>確認用のメールを送信しました！</DialogTitle>
+        <DialogTitle>登録に成功しました！</DialogTitle>
         <Box sx={{ mx: 3, "& button": { my: 1 } }}>
           <Typography sx={{ mb: 3 }}>
-            これを行うにはメールの確認が必要です。メール受信箱を確認して説明に従ってください。メールは以下のメールアドレスへ送信されました。
+            まもなくマイセンテンス画面に遷移します。
           </Typography>
-          <Link to="/mysentence" style={{ textDecoration: "none" }}>
+          {/* <Link to="/mysentence" style={{ textDecoration: "none" }}>
             <Button
               fullWidth
               variant="contained"
@@ -254,9 +272,16 @@ const Signup = () => {
             onClick={handleClose}
           >
             Eメールアドレスを編集
-          </Button>
+          </Button> */}
         </Box>
       </Dialog>
+      {/* 送信エラー時のスナックバー */}
+      <Snackbar
+        open={errorOpen}
+        onClose={() => setErrorOpen(false)}
+        message="登録に失敗しました"
+        autoHideDuration={6000}
+      />
     </div>
   );
 };

@@ -32,8 +32,10 @@ const MySentence = () => {
             }
           })
         );
+        setOpenSort(false);
         break;
       case 1:
+        setOpenSort(false);
         break;
       case 2:
         setSortedList(
@@ -45,6 +47,7 @@ const MySentence = () => {
             }
           })
         );
+        setOpenSort(false);
         break;
       default:
         console.log("並び替えで実行できない数値が選ばれました");
