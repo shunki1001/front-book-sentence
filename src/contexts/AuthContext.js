@@ -156,13 +156,19 @@ const AuthContextProvider = (props) => {
             )
             .catch((err) => {
               console.log("アクセストークン更新失敗");
+            })
+            .then(() => {
+              setToken(
+                document.cookie
+                  .match(/csrf_access_token=.{36}/)[0]
+                  .split("=")[1]
+              );
+              setRefreshToken(
+                document.cookie
+                  .match(/csrf_refresh_token=.{36}/)[0]
+                  .split("=")[1]
+              );
             });
-          setToken(
-            document.cookie.match(/csrf_access_token=.{36}/)[0].split("=")[1]
-          );
-          setRefreshToken(
-            document.cookie.match(/csrf_refresh_token=.{36}/)[0].split("=")[1]
-          );
         };
 
         setInterval(getRefreshToken, 1000000);

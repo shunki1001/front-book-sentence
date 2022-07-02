@@ -1,6 +1,6 @@
 {
   "inputStream": {
-    "type": "LiveStream",
+    "type": "ImageStream",
     "constraints": {
       "width": { "min": 450 },
       "height": { "min": 300 },
@@ -12,7 +12,7 @@
     "patchSize": "medium",
     "halfSample": true
   },
-  "numOfWorkers": 2,
+  "numOfWorkers": 0,
   "frequency": 1,
   "decoder": {
     "readers": ["ean_reader"]

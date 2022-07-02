@@ -27,9 +27,11 @@ export const CropperComponent = (props) => {
 
   const getCropData = async () => {
     if (typeof cropper !== "undefined") {
-      setCropData(cropper.getCroppedCanvas().toDataURL("image/png"));
+      const croppedUrl = cropper.getCroppedCanvas().toDataURL("image/png");
+      console.log(image);
       // Base64からバイナリへ変換
-      let bin = Buffer.from(cropData.replace(/^.*,/, ""), "base64");
+      // let bin = Buffer.from(croppedUrl.replace(/^.*,/, ""), "base64");
+      var bin = atob(croppedUrl.replace(/^.*,/, ""));
       //   var bin = atob(cropData.replace(/^.*,/, ""));
       let buffer = new Uint8Array(bin.length);
       for (let i = 0; i < bin.length; i++) {
@@ -49,8 +51,7 @@ export const CropperComponent = (props) => {
       //   var formData = new FormData();
       //   formData.append("image", file);
       props.setCroppedData(file);
-      console.log(file);
-      console.log(typeof buffer);
+      console.log(typeof file);
       props.setCropModal(false);
     }
   };
@@ -73,6 +74,7 @@ export const CropperComponent = (props) => {
           background={false}
           responsive={true}
           autoCropArea={1}
+          zoomable={false}
           checkOrientation={false} // https://github.com/fengyuanchen/cropperjs/issues/671
           onInitialized={(instance) => {
             setCropper(instance);

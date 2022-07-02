@@ -44,6 +44,8 @@ export const UploadLabelByBarcode = (props) => {
   const [infoOpen, setInfoOpen] = useState(false);
   const [result, setResult] = useState(null);
 
+  const [imageBarcode, setImageBarcode] = useState();
+
   const { flagWhereFrom, setIsbnResult } = useContext(DataContext);
 
   const navigate = useNavigate();
@@ -129,15 +131,21 @@ export const UploadLabelByBarcode = (props) => {
     setCamera(true);
   };
 
+  const handleChangeBarcode = async (event) => {
+    const { name, files } = event.target;
+    setImageBarcode(files[0]);
+    console.log(files[0]);
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    event.target.value = "";
+    setCamera(true);
+  };
+
   return (
     <>
-      <Button style={UploadLabelStyle} onClick={() => setCamera(!camera)}>
-        {camera ? "stop" : "start"}
-      </Button>
-      <UploadLabel />
+      <UploadLabel name="barcode" onChange={handleChangeBarcode} />
 
       <Dialog open={camera} onClose={handleCloseCamera}>
-        <Scanner onDetected={onDetected} />
+        <Scanner onDetected={onDetected} image={imageBarcode} />
       </Dialog>
       <Dialog open={infoOpen} onClose={handleCloseInfo}>
         <Box textAlign="center" sx={{ m: 2 }}>

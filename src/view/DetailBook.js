@@ -13,6 +13,7 @@ import {
   Dialog,
   DialogTitle,
   TextField,
+  Snackbar,
 } from "@mui/material";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 
@@ -97,6 +98,10 @@ const DetailBook = () => {
   const [cameraModal, setCameraModal] = useState(false);
   const [cropModal, setCropModal] = useState(false);
 
+  // Snackbarトリガー
+  const [toolApiOpen, setToolApiOpen] = useState(false);
+  const [registApiOpen, setRegistApiOpen] = useState(false);
+
   // 送信時の挙動
   const handleClickOpenSendModal = async () => {
     let sendData = { ...sentence, tags: tagList };
@@ -123,7 +128,7 @@ const DetailBook = () => {
             imageUrl: editingSentence[0].imageUrl,
           });
         })
-        .catch((err) => alert("登録できませんでした"));
+        .catch((err) => setRegistApiOpen(true));
     } else if (checkFlag.current === 2) {
       console.log("ISBNから");
       console.log(InfoBook);
@@ -148,7 +153,7 @@ const DetailBook = () => {
             imageUrl: isbnResult.imageUrl,
           });
         })
-        .catch((err) => alert("登録できませんでした"));
+        .catch((err) => setRegistApiOpen(true));
     } else {
       console.log("連続投稿");
       await axios
@@ -167,12 +172,13 @@ const DetailBook = () => {
           console.log(res.data.info);
           setUpdateItem({ ...res.data.info, ...InfoBook });
         })
-        .catch((err) => alert("登録できませんでした"));
+        .catch((err) => setRegistApiOpen(true));
     }
   };
   const handleClose = () => {
     setOpen(false);
     setCameraModal(false);
+    setCropModal(false);
   };
   const handleClickCameraUpload = () => {
     setCameraModal(true);
@@ -189,18 +195,23 @@ const DetailBook = () => {
   const renderFlagRef = useRef(false);
   useEffect(() => {
     if (renderFlagRef.current) {
+      var formData = new FormData();
+      formData.append("image", croppedData);
+      console.log(formData);
       // 画像が切り抜かれたら、画像解析APIを叩いて、コンテンツの文字をゲット
-      axios.post(
-        `${baseUrl.tool}/character-reader`,
-        {
-          image: croppedData,
-        },
-        {
+      axios
+        .post(`${baseUrl.tool}/character-reader`, formData, {
           headers: {
             "X-CSRF-ACCESS-TOKEN": token,
           },
-        }
-      );
+        })
+        .then((res) => {
+          console.log(res.data.info.text);
+          setSentence({ ...sentence, quote_sentence: res.data.info.text });
+        })
+        .catch((err) => {
+          setToolApiOpen(true);
+        });
       console.log("画像解析APIを叩くよ");
     } else {
       console.log("useEffectはまだ動かないよ");
@@ -346,6 +357,18 @@ const DetailBook = () => {
           setCropModal={setCropModal}
         />
       </Dialog>
+
+      {/* API通信エラー時 */}
+      <Snackbar
+        message="センテンスの取得に失敗しました"
+        open={toolApiOpen}
+        onClose={() => setToolApiOpen(false)}
+      />
+      <Snackbar
+        message="登録に失敗しました"
+        open={registApiOpen}
+        onClose={() => setRegistApiOpen(false)}
+      />
     </div>
   );
 };
