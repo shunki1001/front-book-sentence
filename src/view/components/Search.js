@@ -9,6 +9,7 @@ const searchTextareaStyle = {
   borderWidth: "0px",
   color: "white",
   fontFamily: "Zen Old Mincho, Roboto, Helvetica, Arial, sans-serif",
+  fontSize: "16px",
 };
 
 const Search = (props) => {
@@ -44,3 +45,40 @@ const Search = (props) => {
 };
 
 export default Search;
+
+export const RegistSearch = (props) => {
+  const { label, searchValue, setSearchValue, change, setChange } = props;
+
+  const handleChange = (event) => {
+    setSearchValue(event.target.value);
+  };
+
+  const keypress = (e) => {
+    if (e.key === "Enter") setChange(!change);
+  };
+
+  return (
+    <>
+      <Box
+        sx={{
+          display: "flex",
+          width: "90%",
+          backgroundColor: "#262628",
+          alignItems: "flex-end",
+          borderRadius: 2,
+          mt: 1,
+          pr: 1,
+        }}
+      >
+        <SearchIcon sx={{ color: "primary", mr: 1, my: 1 }} />
+        <input
+          value={searchValue}
+          onChange={handleChange}
+          onKeyDown={(e) => keypress(e)}
+          placeholder={label}
+          style={searchTextareaStyle}
+        ></input>
+      </Box>
+    </>
+  );
+};

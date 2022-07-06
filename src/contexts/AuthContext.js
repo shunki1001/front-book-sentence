@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { createContext, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { rakutenApi } from "./DataContext";
 import noimage from "../static/images/noimage2.png";
 
@@ -30,6 +30,7 @@ const AuthContextProvider = (props) => {
 
   // リダイレクト
   const navigate = useNavigate();
+  const location = useLocation();
 
   const login = async (mail, password) => {
     localStorage.setItem("mail", mail);
@@ -140,16 +141,15 @@ const AuthContextProvider = (props) => {
         );
         setLoading(false);
 
-        let localToken = token;
-        let localRefreshToken = refreshToken;
         const getRefreshToken = async () => {
+          console.log(refreshToken);
           await axios
             .post(
               `${baseUrl.auth}/refresh`,
               {},
               {
                 headers: {
-                  "X-CSRF-REFRESH-TOKEN": localRefreshToken,
+                  "X-CSRF-REFRESH-TOKEN": refreshToken,
                 },
                 withCredentials: true,
               }
@@ -171,9 +171,14 @@ const AuthContextProvider = (props) => {
             });
         };
 
-        setInterval(getRefreshToken, 1000000);
+        setInterval(getRefreshToken, 1800 * 1000);
 
-        navigate("/mysentence", { replace: true });
+        if (
+          location.pathname === "/signin" ||
+          location.pathname === "/signup"
+        ) {
+          navigate("/mysentence", { replace: true });
+        }
       };
       getSentece();
     } else {
@@ -225,6 +230,7 @@ const AuthContextProvider = (props) => {
     logout,
     tryLogin,
     sentenceList,
+    setSentenceList,
     baseUrl,
     token,
     loading,

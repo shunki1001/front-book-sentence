@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useContext, useEffect, useState } from "react";
 
 import {
@@ -10,53 +10,46 @@ import {
   Typography,
 } from "@mui/material";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import BarcodeIcon from "./components/CustomIcon/BarcodeIcon";
 import Header from "./components/Header";
-import Search from "./components/Search";
+import { RegistSearch } from "./components/Search";
 import BookInfo from "./components/BookInfo";
 import { UploadLabelByBarcode } from "./components/UploadLabel";
-import { AuthContext } from "../contexts/AuthContext";
 import { DataContext } from "../contexts/DataContext";
-// import { rakutenApiKeyword } from "../contexts/DataContext";
+import { rakutenApiKeyword } from "../contexts/DataContext";
 
 const ListBook = () => {
   const [openModal, setOpenModal] = useState(false);
   const [isbnPhoto, setIsbnPhoto] = useState();
+
+  const { setIsbnResult, flagWhereFrom } = useContext(DataContext);
+
+  const [titleList, setTitleList] = useState([]);
+  const [change, setChange] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
-  const { sentenceList, loading, setLoading } = useContext(AuthContext);
-  const { setPassId, flagWhereFrom } = useContext(DataContext);
+  const [rakutenError, setRakutenError] = useState(false);
 
-  const [titleList, setTitleList] = useState(sentenceList);
+  const navigate = useNavigate();
 
   // 検索機能
+  const firstFlag = useRef(false);
   useEffect(() => {
-    if (searchValue.length > 0) {
-      // 正規表現に変数を使う時に必要なRegExp
-      let seachValueRegExp = new RegExp(searchValue, "g");
-      let searchedList = sentenceList.filter((item) => {
-        return (
-          item.title.match(seachValueRegExp) ||
-          item.author.match(seachValueRegExp)
-        );
-      });
-      setTitleList(searchedList);
-    } else {
-      setTitleList(titleList);
-    }
     // 楽天のキーワード検索
-    // const rakutenGetKeyword = () => {
-    //   rakutenApiKeyword;
-    // };
-    // rakutenGetKeyword();
-  }, [searchValue]);
-
-  // データ更新
-  useEffect(() => {
-    setTitleList(sentenceList);
-  }, [loading]);
+    if (firstFlag.current) {
+      rakutenApiKeyword(searchValue)
+        .then((res) => {
+          setTitleList(res.data.Items);
+        })
+        .catch((err) => {
+          setRakutenError(true);
+        });
+    } else {
+      firstFlag.current = true;
+    }
+  }, [change]);
 
   const handleClickReader = () => {
     console.log("バーコードリーダー起動");
@@ -70,19 +63,29 @@ const ListBook = () => {
     setIsbnPhoto(files[0]);
     event.target.value = "";
   };
-  const linkClickHandler = (id) => {
-    setPassId(id);
-    flagWhereFrom("fromMy");
+  const linkClickHandler = async (index) => {
+    setIsbnResult({
+      author: titleList[index].Item.author,
+      title: titleList[index].Item.title,
+      imageUrl: titleList[index].Item.mediumImageUrl,
+      isbn: titleList[index].Item.isbn,
+    });
+    console.log(titleList[index].Item.author);
+    flagWhereFrom("fromIsbn");
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    navigate("/detailbook");
   };
 
   return (
     <div>
       <Header HeaderName="書籍登録" />
       <Box sx={{ width: "100%", display: "flex", px: "20px", mb: 2 }}>
-        <Search
+        <RegistSearch
           label="タイトル、著者"
           searchValue={searchValue}
           setSearchValue={setSearchValue}
+          change={change}
+          setChange={setChange}
         />
         <IconButton
           sx={{
@@ -99,11 +102,15 @@ const ListBook = () => {
           <BarcodeIcon />
         </IconButton>
       </Box>
-
+      {titleList.length === 0 && (
+        <Typography style={{ textAlign: "center" }}>
+          検索ワードを入力してください
+        </Typography>
+      )}
       {titleList.map((sentence, index) => {
         return (
           <Button
-            onClick={() => linkClickHandler(sentence.sentence_id)}
+            onClick={() => linkClickHandler(index)}
             key={index}
             style={{ textAlign: "left", lineHeight: 2, width: "375px" }}
           >
@@ -115,7 +122,7 @@ const ListBook = () => {
                 width: "100%",
               }}
             >
-              <BookInfo sentence={sentence} />
+              <BookInfo sentence={sentence} rakuten />
             </Link>
           </Button>
         );
@@ -134,9 +141,10 @@ const ListBook = () => {
       </Dialog>
 
       <Snackbar
-        open={loading}
-        onClose={() => setLoading(false)}
-        message="書籍情報を読み込んでいます"
+        open={rakutenError}
+        onClose={() => setRakutenError(false)}
+        message="検索できませんでした。しばらく経ってからもう一度行って下さい"
+        autoHideDuration={2000}
       />
     </div>
   );

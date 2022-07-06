@@ -5,11 +5,18 @@ import { AuthContext } from "./AuthContext";
 
 export const DataContext = createContext();
 
+const applicationId = "1043368543816196762";
 export const rakutenApi = async (isbn) => {
-  const applicationId = "1043368543816196762";
   return axios.get(
     `https://app.rakuten.co.jp/services/api/BooksBook/Search/20170404?applicationId=${applicationId}&isbn=${isbn}`
   );
+};
+
+export const rakutenApiKeyword = async (keyword) => {
+  const encodedKeyword = encodeURI(keyword);
+  const url = `https://app.rakuten.co.jp/services/api/BooksTotal/Search/20170404?applicationId=${applicationId}&keyword=${encodedKeyword}`;
+  console.log(url);
+  return axios.get(url);
 };
 
 const DataContextProvider = (props) => {
@@ -22,7 +29,7 @@ const DataContextProvider = (props) => {
   console.log(sentenceList);
 
   // リストの更新。
-  const updataList = async () => {
+  const updateList = async () => {
     const resSentence = await axios
       .get(`${baseUrl.sentence}/${userid}/list`, {
         headers: {
@@ -43,8 +50,9 @@ const DataContextProvider = (props) => {
         newSenteceList.push(resSentence.data.info[i]);
       }
     }
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     console.log(newSenteceList);
-    await new Promise((resolve) => setTimeout(resolve, 500));
 
     // 楽天取得(本番用)
     // resSentence.data.info.forEach((item, resIndex) => {
@@ -117,6 +125,7 @@ const DataContextProvider = (props) => {
     setIsbnResult,
     flagWhereFrom,
     checkFlag,
+    updateList,
   };
 
   return (

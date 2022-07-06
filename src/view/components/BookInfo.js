@@ -10,11 +10,23 @@ const BookInfo = (props) => {
         {" "}
         {/* 45/(375-20*2)=0.134 */}
         {/* <BookFace src={pic} /> */}
-        <BookFace src={props.sentence.imageUrl} />
+        {props.rakuten ? (
+          <BookFace src={props.sentence.Item.mediumImageUrl} />
+        ) : (
+          <BookFace src={props.sentence.imageUrl} />
+        )}
       </Box>
       <Box sx={{ my: 1, width: "67%" }}>
-        <Typography variant="h6">{props.sentence.title}</Typography>
-        <Typography variant="p">{props.sentence.author}</Typography>
+        {props.rakuten ? (
+          <Typography variant="h6">{props.sentence.Item.title}</Typography>
+        ) : (
+          <Typography variant="h6">{props.sentence.title}</Typography>
+        )}
+        {props.rakuten ? (
+          <Typography variant="p">{props.sentence.Item.author}</Typography>
+        ) : (
+          <Typography variant="p">{props.sentence.author}</Typography>
+        )}
       </Box>
     </Box>
   );

@@ -68,10 +68,15 @@ const Scanner = (props) => {
         src: URL.createObjectURL(image), // or 'data:image/jpg;base64,' + data
       },
       function (result) {
-        if (result.codeResult) {
-          console.log("result", result.codeResult.code);
+        console.log("result?");
+        if (result === undefined) {
+          alert("バーコードが読み取れません");
         } else {
-          console.log("not detected");
+          if (result.codeResult) {
+            console.log("result", result.codeResult.code);
+          } else {
+            console.log("not detected");
+          }
         }
       }
     );
