@@ -18,12 +18,14 @@ import { RegistSearch } from "./components/Search";
 import BookInfo from "./components/BookInfo";
 import { UploadLabelByBarcode } from "./components/UploadLabel";
 import { DataContext } from "../contexts/DataContext";
-import { rakutenApiKeyword } from "../contexts/DataContext";
+import { rakutenApiKeyword, rakutenApi } from "../contexts/DataContext";
+import { AuthContext } from "../contexts/AuthContext";
 
 const ListBook = () => {
   const [openModal, setOpenModal] = useState(false);
   const [isbnPhoto, setIsbnPhoto] = useState();
 
+  const { sentenceList } = useContext(AuthContext);
   const { setIsbnResult, flagWhereFrom } = useContext(DataContext);
 
   const [titleList, setTitleList] = useState([]);
@@ -50,6 +52,29 @@ const ListBook = () => {
       firstFlag.current = true;
     }
   }, [change]);
+
+  useEffect(() => {
+    const setFirstList = () => {
+      const AllIsbnList = sentenceList.map((item) => {
+        return item.isbn;
+      });
+      const isbnList = AllIsbnList.filter((item, pos) => {
+        return AllIsbnList.indexOf(item) == pos;
+      });
+      console.log(isbnList);
+      isbnList.forEach((item, index) => {
+        setTimeout(() => {
+          rakutenApi(item)
+            .then((res) => {
+              const temp = res.data.Items[0].Item;
+              setTitleList((prev) => [...prev, { Item: temp }]);
+            })
+            .catch((err) => {});
+        }, index * 800);
+      });
+    };
+    setFirstList();
+  }, []);
 
   const handleClickReader = () => {
     console.log("バーコードリーダー起動");

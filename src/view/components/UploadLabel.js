@@ -44,6 +44,8 @@ export const UploadLabelByBarcode = (props) => {
   const [infoOpen, setInfoOpen] = useState(false);
   const [result, setResult] = useState(null);
 
+  const [error, setError] = useState(false);
+
   const [imageBarcode, setImageBarcode] = useState();
 
   const { flagWhereFrom, setIsbnResult } = useContext(DataContext);
@@ -66,6 +68,14 @@ export const UploadLabelByBarcode = (props) => {
     //   }
     // }, 500);
   };
+  const renderFlagRef2 = useRef(false);
+  useEffect(() => {
+    if (renderFlagRef2.current) {
+      setCamera(false);
+    } else {
+      renderFlagRef2.current = true;
+    }
+  }, [error]);
 
   const getRakutenISBN = async (readISBN) => {
     const res = await rakutenApi(readISBN).catch((error) => {
@@ -96,6 +106,7 @@ export const UploadLabelByBarcode = (props) => {
         alert(
           "9784で始まるバーコードのみ読み取られるようにして、もう一度試してみてください"
         );
+        setError(!error);
         setCamera(true);
         setInfoOpen(false);
       }
@@ -145,7 +156,12 @@ export const UploadLabelByBarcode = (props) => {
       <UploadLabel name="barcode" onChange={handleChangeBarcode} />
 
       <Dialog open={camera} onClose={handleCloseCamera}>
-        <Scanner onDetected={onDetected} image={imageBarcode} />
+        <Scanner
+          onDetected={onDetected}
+          image={imageBarcode}
+          error={error}
+          setError={setError}
+        />
       </Dialog>
       <Dialog open={infoOpen} onClose={handleCloseInfo}>
         <Box textAlign="center" sx={{ m: 2 }}>
