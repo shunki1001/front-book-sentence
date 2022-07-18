@@ -52,7 +52,6 @@ const MySentence = () => {
         setOpenSort(false);
         break;
       default:
-        console.log("並び替えで実行できない数値が選ばれました");
         break;
     }
   }, [selectedIndex]);

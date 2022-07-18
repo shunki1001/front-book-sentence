@@ -24,7 +24,6 @@ const BookComponent = (props) => {
   const navigate = useNavigate();
 
   const editHandleClick = async (id) => {
-    console.log(id);
     setPassId(id);
     flagWhereFrom("fromMy");
     await new Promise((resolve) => setTimeout(resolve, 500));

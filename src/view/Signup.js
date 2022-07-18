@@ -51,7 +51,7 @@ for (let i = 1; i <= 31; i++) {
 }
 
 const Signup = () => {
-  const { login } = useContext(AuthContext);
+  const { login, baseUrl } = useContext(AuthContext);
 
   const [sex, setSex] = useState("男");
   const [birthday, setBirthday] = useState({
@@ -71,7 +71,7 @@ const Signup = () => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     axios
-      .post("/book-sentence-api/api/user/regist", {
+      .post(`${baseUrl}/regist`, {
         mail_addr: data.get("email"),
         password: data.get("password"),
         name: data.get("name"),

@@ -6,10 +6,9 @@ const Scanner = (props) => {
   const { onDetected, image, error, setError } = props;
 
   useEffect(() => {
-    console.log(URL.createObjectURL(image));
+    // console.log(URL.createObjectURL(image));
     Quagga.init(config, (err) => {
       if (err) {
-        console.log(err, "error msg");
       }
       Quagga.start();
       return () => {
@@ -68,16 +67,9 @@ const Scanner = (props) => {
         src: URL.createObjectURL(image), // or 'data:image/jpg;base64,' + data
       },
       function (result) {
-        console.log("result?");
         if (result === undefined) {
           alert("バーコードが読み取れません");
           setError(!error);
-        } else {
-          if (result.codeResult) {
-            console.log("result", result.codeResult.code);
-          } else {
-            console.log("not detected");
-          }
         }
       }
     );

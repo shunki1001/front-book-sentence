@@ -32,9 +32,60 @@ const AuthContextProvider = (props) => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // すでにログインがあるかどうか確認
+  useEffect(() => {
+    // if (localStorage.getItem("user")) {
+    //   login(localStorage.getItem("mail"), localStorage.getItem("password"));
+    // }
+    if (document.cookie) {
+      if (document.cookie.match(/csrf_refresh_token=.{36}/)[0].split("=")[1]) {
+        const getRefreshToken = async () => {
+          await axios
+            .post(
+              `${baseUrl.auth}/refresh`,
+              {},
+              {
+                headers: {
+                  "X-CSRF-REFRESH-TOKEN": document.cookie
+                    .match(/csrf_refresh_token=.{36}/)[0]
+                    .split("=")[1],
+                },
+                withCredentials: true,
+              }
+            )
+            .catch((err) => {
+              // console.log("アクセストークン更新失敗");
+              navigate("/signin", { replace: true });
+            })
+            .then((res) => {
+              setToken(
+                document.cookie
+                  .match(/csrf_access_token=.{36}/)[0]
+                  .split("=")[1]
+              );
+              setRefreshToken(
+                document.cookie
+                  .match(/csrf_refresh_token=.{36}/)[0]
+                  .split("=")[1]
+              );
+              if (localStorage.getItem("user")) {
+                setUserid(localStorage.getItem("user"));
+              } else {
+                navigate("/signin", { replace: true });
+              }
+            });
+        };
+        getRefreshToken();
+      } else {
+        navigate("/signin", { replace: true });
+      }
+    }
+  }, []);
+
+  // ログイン関数
   const login = async (mail, password) => {
-    localStorage.setItem("mail", mail);
-    localStorage.setItem("password", password);
+    // localStorage.setItem("mail", mail);
+    // localStorage.setItem("password", password);
     const resToken = await axios
       .post(
         `${baseUrl.auth}/token`,
@@ -47,7 +98,6 @@ const AuthContextProvider = (props) => {
         }
       )
       .catch((err) => {
-        console.log("ログイン失敗");
         setTryLogin(true);
       });
     setUserid(resToken.data.info.user_id);
@@ -58,18 +108,9 @@ const AuthContextProvider = (props) => {
 
     // 初回ログイン時にログインした情報をローカルストレージに保存
     if (!localStorage.getItem("user")) {
-      console.log("始めて");
       localStorage.setItem("user", resToken.data.info.user_id);
     }
   };
-
-  // すでにログインがあるかどうか確認
-  useEffect(() => {
-    if (localStorage.getItem("user")) {
-      console.log("ローカルストレージにログイン履歴発見");
-      login(localStorage.getItem("mail"), localStorage.getItem("password"));
-    }
-  }, []);
 
   // 初回レンダリングで走らせないためのフラグ
   const renderFlagRef = useRef(false);
@@ -83,10 +124,7 @@ const AuthContextProvider = (props) => {
             },
             withCredentials: true,
           })
-          .catch((err) => {
-            console.log("センテンス取得失敗");
-          });
-        console.log(resSentence.data.info);
+          .catch((err) => {});
         setSentenceList(resSentence.data.info);
 
         // 楽天取得(本番用)
@@ -133,45 +171,46 @@ const AuthContextProvider = (props) => {
                   });
                 });
               });
-          }, resIndex * 800);
+          }, resIndex * 800 + 800);
         });
 
         await new Promise((resolve) =>
           setTimeout(resolve, resSentence.data.info.length * 800 + 500)
         );
+        console.clear();
         setLoading(false);
 
-        const getRefreshToken = async () => {
-          console.log(refreshToken);
-          await axios
-            .post(
-              `${baseUrl.auth}/refresh`,
-              {},
-              {
-                headers: {
-                  "X-CSRF-REFRESH-TOKEN": refreshToken,
-                },
-                withCredentials: true,
-              }
-            )
-            .catch((err) => {
-              console.log("アクセストークン更新失敗");
-            })
-            .then(() => {
-              setToken(
-                document.cookie
-                  .match(/csrf_access_token=.{36}/)[0]
-                  .split("=")[1]
-              );
-              setRefreshToken(
-                document.cookie
-                  .match(/csrf_refresh_token=.{36}/)[0]
-                  .split("=")[1]
-              );
-            });
-        };
+        // const getRefreshToken = async () => {
+        //   console.log(refreshToken);
+        //   await axios
+        //     .post(
+        //       `${baseUrl.auth}/refresh`,
+        //       {},
+        //       {
+        //         headers: {
+        //           "X-CSRF-REFRESH-TOKEN": refreshToken,
+        //         },
+        //         withCredentials: true,
+        //       }
+        //     )
+        //     .catch((err) => {
+        //       console.log("アクセストークン更新失敗");
+        //     })
+        //     .then(() => {
+        //       setToken(
+        //         document.cookie
+        //           .match(/csrf_access_token=.{36}/)[0]
+        //           .split("=")[1]
+        //       );
+        //       setRefreshToken(
+        //         document.cookie
+        //           .match(/csrf_refresh_token=.{36}/)[0]
+        //           .split("=")[1]
+        //       );
+        //     });
+        // };
 
-        setInterval(getRefreshToken, 1800 * 1000);
+        // setInterval(getRefreshToken, 1800 * 1000);
 
         if (
           location.pathname === "/signin" ||
@@ -197,26 +236,26 @@ const AuthContextProvider = (props) => {
   }, [updateItem]);
 
   // タグ使用率
-  const renderFlagRef2 = useRef(false);
-  useEffect(() => {
-    if (renderFlagRef2.current == true) {
-      const updateTag = async () => {
-        const updataTagApi = await axios.get(
-          `${baseUrl.analysis}/${userid}/tag-use-rate`,
-          {
-            headers: {
-              "X-CSRF-ACCESS-TOKEN": token,
-            },
-            withCredentials: true,
-          }
-        );
-        setTagApi(updataTagApi.data.info);
-      };
-      updateTag();
-    } else if (renderFlagRef2.current == false) {
-      renderFlagRef2.current = true;
-    }
-  }, [userid]);
+  // const renderFlagRef2 = useRef(false);
+  // useEffect(() => {
+  //   if (renderFlagRef2.current == true) {
+  //     const updateTag = async () => {
+  //       const updataTagApi = await axios.get(
+  //         `${baseUrl.analysis}/${userid}/tag-use-rate`,
+  //         {
+  //           headers: {
+  //             "X-CSRF-ACCESS-TOKEN": token,
+  //           },
+  //           withCredentials: true,
+  //         }
+  //       );
+  //       setTagApi(updataTagApi.data.info);
+  //     };
+  //     updateTag();
+  //   } else if (renderFlagRef2.current == false) {
+  //     renderFlagRef2.current = true;
+  //   }
+  // }, [userid]);
 
   const logout = () => {
     localStorage.removeItem("user");

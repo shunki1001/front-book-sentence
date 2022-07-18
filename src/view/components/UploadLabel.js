@@ -55,18 +55,6 @@ export const UploadLabelByBarcode = (props) => {
   const onDetected = (result) => {
     setResult(result);
     setCamera(false);
-    // tempResult = result;
-    // setTimeout(() => {
-    //   if (tempResult.length === 13) {
-    //     // 精度を上げるために日本の書籍に限定
-    //     if (tempResult.slice(0, 4) === 9784) {
-    //       console.log(tempResult);
-    //       setResult(tempResult);
-    //       setCamera(false);
-    //       setInfoOpen(true);
-    //     }
-    //   }
-    // }, 500);
   };
   const renderFlagRef2 = useRef(false);
   useEffect(() => {
@@ -99,19 +87,17 @@ export const UploadLabelByBarcode = (props) => {
   const renderFlagRef = useRef(false);
   useEffect(() => {
     if (renderFlagRef.current) {
-      if (result.length == 13 && result.slice(0, 4) == "9784") {
+      if (result.length == 13 && result.slice(0, 4) == "978") {
         getRakutenISBN(result);
-        console.log(result);
       } else {
         alert(
-          "9784で始まるバーコードのみ読み取られるようにして、もう一度試してみてください"
+          "978で始まるバーコードのみ読み取られるようにして、もう一度試してみてください"
         );
         setError(!error);
         setCamera(true);
         setInfoOpen(false);
       }
     } else {
-      console.log("useEffectはまだ動かないよ");
       renderFlagRef.current = true;
     }
   }, [result]);
@@ -124,14 +110,12 @@ export const UploadLabelByBarcode = (props) => {
   };
 
   const handleClickOk = async () => {
-    console.log("OKボタン");
     setIsbnResult({
       author: authorName,
       title: bookName,
       imageUrl: image,
       isbn: result,
     });
-    console.log(authorName);
     flagWhereFrom("fromIsbn");
     await new Promise((resolve) => setTimeout(resolve, 500));
     navigate("/detailbook");
@@ -145,7 +129,6 @@ export const UploadLabelByBarcode = (props) => {
   const handleChangeBarcode = async (event) => {
     const { name, files } = event.target;
     setImageBarcode(files[0]);
-    console.log(files[0]);
     await new Promise((resolve) => setTimeout(resolve, 500));
     event.target.value = "";
     setCamera(true);

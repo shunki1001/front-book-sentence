@@ -61,7 +61,6 @@ const ListBook = () => {
       const isbnList = AllIsbnList.filter((item, pos) => {
         return AllIsbnList.indexOf(item) == pos;
       });
-      console.log(isbnList);
       isbnList.forEach((item, index) => {
         setTimeout(() => {
           rakutenApi(item)
@@ -77,7 +76,6 @@ const ListBook = () => {
   }, []);
 
   const handleClickReader = () => {
-    console.log("バーコードリーダー起動");
     setOpenModal(true);
   };
   const handleClose = () => {
@@ -95,7 +93,6 @@ const ListBook = () => {
       imageUrl: titleList[index].Item.mediumImageUrl,
       isbn: titleList[index].Item.isbn,
     });
-    console.log(titleList[index].Item.author);
     flagWhereFrom("fromIsbn");
     await new Promise((resolve) => setTimeout(resolve, 500));
     navigate("/detailbook");

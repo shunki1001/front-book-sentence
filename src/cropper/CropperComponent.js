@@ -28,7 +28,7 @@ export const CropperComponent = (props) => {
   const getCropData = async () => {
     if (typeof cropper !== "undefined") {
       const croppedUrl = cropper.getCroppedCanvas().toDataURL("image/png");
-      console.log(image);
+      // console.log(image);
       // Base64からバイナリへ変換
       // let bin = Buffer.from(croppedUrl.replace(/^.*,/, ""), "base64");
       var bin = atob(croppedUrl.replace(/^.*,/, ""));
@@ -51,7 +51,7 @@ export const CropperComponent = (props) => {
       //   var formData = new FormData();
       //   formData.append("image", file);
       props.setCroppedData(file);
-      console.log(typeof file);
+      // console.log(typeof file);
       props.setCropModal(false);
     }
   };
@@ -63,7 +63,7 @@ export const CropperComponent = (props) => {
           引用部分の切り抜き
         </Typography>
         <Cropper
-          style={{ height: 300, width: "80%" }}
+          style={{ height: 300, width: "80%", margin: "0 auto" }}
           zoomTo={0.5}
           initialAspectRatio={1}
           // preview=".img-preview"

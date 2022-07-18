@@ -52,7 +52,6 @@ const DetailBook = () => {
 
   // どこのページから遷移してきたかで初期値を設定
   useEffect(() => {
-    console.log("呼ばれた");
     if (checkFlag.current === 1) {
       setSentence({
         title: editingSentence[0].title,
@@ -72,7 +71,6 @@ const DetailBook = () => {
         imageUrl: editingSentence[0].imageUrl,
       };
     } else if (checkFlag.current === 2) {
-      console.log(isbnResult);
       setSentence({
         title: isbnResult.title,
         author: isbnResult.author,
@@ -93,7 +91,6 @@ const DetailBook = () => {
         memo: "",
         tags: [],
       };
-      console.log(InfoBook);
     } else if (checkFlag.current === 3) {
       setSentence({
         ...sentence,
@@ -110,7 +107,6 @@ const DetailBook = () => {
         memo: "",
         tags: [],
       };
-      console.log(InfoBook);
     }
   }, []);
 
@@ -130,7 +126,6 @@ const DetailBook = () => {
   // 連続投稿時
   useEffect(() => {
     if (checkFlag.current === 3) {
-      console.log("呼ばれる");
       setSentence({
         ...sentence,
         quote_sentence: "",
@@ -158,14 +153,11 @@ const DetailBook = () => {
         )
         .then((res) => {
           setOpen(true);
-          console.log(res.data.info);
 
           // AuthContextのsentenceListを更新する
-          console.log("editingsentence");
-          console.log(editingSentence);
+
           setSentenceList((prevItems) => {
             return prevItems.map((oldItem, itemIndex) => {
-              console.log(oldItem.sentence_id);
               // 該当のオブジェクトにだけ書籍情報を追加
               if (oldItem.sentence_id === editingSentence[0].sentence_id) {
                 return {
@@ -190,8 +182,6 @@ const DetailBook = () => {
         })
         .catch((err) => setRegistApiOpen(true));
     } else if (checkFlag.current === 2) {
-      console.log("ISBNから");
-      console.log(InfoBook);
       await axios
         .post(
           `${baseUrl.sentence}/regist`,
@@ -205,7 +195,6 @@ const DetailBook = () => {
         )
         .then((res) => {
           setOpen(true);
-          console.log(res.data.info);
           setUpdateItem({
             ...res.data.info,
             title: isbnResult.title,
@@ -216,7 +205,6 @@ const DetailBook = () => {
         .catch((err) => setRegistApiOpen(true));
       updateList();
     } else {
-      console.log("連続投稿");
       await axios
         .post(
           `${baseUrl.sentence}/regist`,
@@ -257,7 +245,6 @@ const DetailBook = () => {
     if (renderFlagRef.current) {
       var formData = new FormData();
       formData.append("image", croppedData);
-      console.log(formData);
       // 画像が切り抜かれたら、画像解析APIを叩いて、コンテンツの文字をゲット
       axios
         .post(`${baseUrl.tool}/character-reader`, formData, {
@@ -266,15 +253,12 @@ const DetailBook = () => {
           },
         })
         .then((res) => {
-          console.log(res.data.info.text);
           setSentence({ ...sentence, quote_sentence: res.data.info.text });
         })
         .catch((err) => {
           setToolApiOpen(true);
         });
-      console.log("画像解析APIを叩くよ");
     } else {
-      console.log("useEffectはまだ動かないよ");
       renderFlagRef.current = true;
     }
 

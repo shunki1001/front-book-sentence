@@ -15,7 +15,6 @@ export const rakutenApi = async (isbn) => {
 export const rakutenApiKeyword = async (keyword) => {
   const encodedKeyword = encodeURI(keyword);
   const url = `https://app.rakuten.co.jp/services/api/BooksTotal/Search/20170404?applicationId=${applicationId}&keyword=${encodedKeyword}`;
-  console.log(url);
   return axios.get(url);
 };
 
@@ -24,9 +23,6 @@ const DataContextProvider = (props) => {
     useContext(AuthContext);
 
   const [passId, setPassId] = useState("");
-
-  console.log("DataContextが呼び出されました");
-  console.log(sentenceList);
 
   // リストの更新。
   const updateList = async () => {
@@ -37,9 +33,7 @@ const DataContextProvider = (props) => {
         },
         withCredentials: true,
       })
-      .catch((err) => {
-        console.log("センテンス取得失敗");
-      });
+      .catch((err) => {});
     // 取得して、Findで差分がある場合のみ、更新
     let newSenteceList = [];
     for (let i = 0; i < resSentence.data.info.length; i++) {
@@ -52,7 +46,6 @@ const DataContextProvider = (props) => {
     }
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log(newSenteceList);
 
     // 楽天取得(本番用)
     // resSentence.data.info.forEach((item, resIndex) => {
