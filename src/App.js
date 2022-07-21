@@ -15,7 +15,7 @@ import DataContextProvider from "./contexts/DataContext";
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/">
       <AuthContextProvider>
         <DataContextProvider>
           <CookiesProvider>
