@@ -8,11 +8,11 @@ export const AuthContext = createContext();
 
 const AuthContextProvider = (props) => {
   const baseUrl = {
-    user: "https://disk.mydns.jp/book-sentence-api/api/user",
-    sentence: "https://disk.mydns.jp/book-sentence-api/api/sentence",
-    tool: "https://disk.mydns.jp/book-sentence-api/tools",
-    analysis: "https://disk.mydns.jp/book-sentence-api/api/analysis",
-    auth: "https://disk.mydns.jp/book-sentence-api/auth",
+    user: "/book-sentence-api/api/user",
+    sentence: "/book-sentence-api/api/sentence",
+    tool: "/book-sentence-api/tools",
+    analysis: "/book-sentence-api/api/analysis",
+    auth: "/book-sentence-api/auth",
   };
   // ログイン情報
   const [loading, setLoading] = useState(false);
