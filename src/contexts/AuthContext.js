@@ -9,11 +9,11 @@ export const AuthContext = createContext();
 const AuthContextProvider = (props) => {
   const apiRoot = "https://api.lebrum.jp";
   const baseUrl = {
-    user: apiRoot + "/book-sentence-api/api/user",
-    sentence: apiRoot + "/book-sentence-api/api/sentence",
-    tool: apiRoot + "/book-sentence-api/tools",
-    analysis: apiRoot + "/book-sentence-api/api/analysis",
-    auth: apiRoot + "/book-sentence-api/auth",
+    user: apiRoot + "/api/user",
+    sentence: apiRoot + "/api/sentence",
+    tool: apiRoot + "/tools",
+    analysis: apiRoot + "/api/analysis",
+    auth: apiRoot + "/auth",
   };
   // ログイン情報
   const [loading, setLoading] = useState(false);
