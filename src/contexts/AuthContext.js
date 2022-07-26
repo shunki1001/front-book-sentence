@@ -216,7 +216,7 @@ const AuthContextProvider = (props) => {
           location.pathname === "/signin" ||
           location.pathname === "/signup"
         ) {
-          navigate("/mysentence", { replace: true });
+          navigate("/", { replace: true });
         }
       };
       getSentece();

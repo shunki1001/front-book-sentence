@@ -83,7 +83,7 @@ const Signup = () => {
         setSuccessModalOpen(true);
         login(data.get("email"), data.get("password"));
         setTimeout(() => {
-          navigate("/mysentence", { replace: true });
+          navigate("/", { replace: true });
         }, 5000);
       })
       .catch((err) => {

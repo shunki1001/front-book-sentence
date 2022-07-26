@@ -21,7 +21,7 @@ const Header = (props) => {
           backgroundColor: "#0a0a0a",
         }}
       >
-        <Link to="/mysentence">
+        <Link to="/">
           <IconButton>
             <HomeIcon />
           </IconButton>

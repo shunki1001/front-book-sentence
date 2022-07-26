@@ -25,7 +25,7 @@ const BeforeRegistModalContent = (props) => {
             連続で投稿する
           </Button>
         </Link>
-        <Link to="/mysentence" style={{ textDecoration: "none" }}>
+        <Link to="/" style={{ textDecoration: "none" }}>
           <Button variant="outlined" fullWidth sx={{ borderRadius: "10px" }}>
             マイセンテンスに戻る
           </Button>
