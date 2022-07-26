@@ -15,7 +15,7 @@ import DataContextProvider from "./contexts/DataContext";
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/">
       <AuthContextProvider>
         <DataContextProvider>
           <CookiesProvider>
@@ -25,7 +25,7 @@ function App() {
                 <Route path="signin" element={<Signin />} />
                 <Route element={<ProtectedRoute />}>
                   <Route path="mypage" element={<MyPage />} />
-                  <Route path="mysentence" element={<MySentence />} />
+                  <Route path="" element={<MySentence />} />
                   <Route path="listbook" element={<ListBook />} />
                   <Route path="detailbook" element={<DetailBook />} />
                 </Route>
