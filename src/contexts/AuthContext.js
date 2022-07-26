@@ -7,7 +7,7 @@ import noimage from "../static/images/noimage2.png";
 export const AuthContext = createContext();
 
 const AuthContextProvider = (props) => {
-  const apiRoot = "";
+  const apiRoot = "https://api.lebrum.jp";
   const baseUrl = {
     user: apiRoot + "/book-sentence-api/api/user",
     sentence: apiRoot + "/book-sentence-api/api/sentence",
