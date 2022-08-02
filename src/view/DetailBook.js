@@ -30,16 +30,25 @@ import { AuthContext } from "../contexts/AuthContext";
 
 // 楽天APIからの書籍情報を一時的に格納する変数
 let InfoBook = {};
-let tagList = [];
+// let tagList = [];
 
 const DetailBook = () => {
-  const { editingSentence, isbnResult, checkFlag } = useContext(DataContext);
-  const { baseUrl, token, userid, updateItem, setUpdateItem } =
-    useContext(AuthContext);
+  const { editingSentence, isbnResult, checkFlag, updateList } =
+    useContext(DataContext);
+  const {
+    baseUrl,
+    token,
+    userid,
+    updateItem,
+    setUpdateItem,
+    setSentenceList,
+    sentenceList,
+  } = useContext(AuthContext);
 
   const navigate = useNavigate();
 
   const [sentence, setSentence] = useState({});
+  const [tagList, setTagList] = useState([]);
 
   // どこのページから遷移してきたかで初期値を設定
   useEffect(() => {
@@ -55,14 +64,13 @@ const DetailBook = () => {
         commentary: "コメント",
         release_flg: "1",
       });
-      tagList = editingSentence[0].tags.map((item) => item.tag);
+      setTagList(editingSentence[0].tags.map((item) => item.tag));
       InfoBook = {
         title: editingSentence[0].title,
         author: editingSentence[0].author,
         imageUrl: editingSentence[0].imageUrl,
       };
     } else if (checkFlag.current === 2) {
-      console.log(isbnResult);
       setSentence({
         title: isbnResult.title,
         author: isbnResult.author,
@@ -74,7 +82,7 @@ const DetailBook = () => {
         commentary: "コメント",
         release_flg: "1",
       });
-      tagList = [];
+      setTagList([]);
       InfoBook = {
         title: isbnResult.title,
         author: isbnResult.author,
@@ -83,9 +91,22 @@ const DetailBook = () => {
         memo: "",
         tags: [],
       };
-      console.log(InfoBook);
-    } else {
-      navigate("/mysentence", { replace: true });
+    } else if (checkFlag.current === 3) {
+      setSentence({
+        ...sentence,
+        quote_sentence: "",
+        memo: "",
+        tags: [],
+      });
+      setTagList([]);
+      InfoBook = {
+        title: isbnResult.title,
+        author: isbnResult.author,
+        imageUrl: isbnResult.imageUrl,
+        quote_sentence: "",
+        memo: "",
+        tags: [],
+      };
     }
   }, []);
 
@@ -102,11 +123,23 @@ const DetailBook = () => {
   const [toolApiOpen, setToolApiOpen] = useState(false);
   const [registApiOpen, setRegistApiOpen] = useState(false);
 
+  // 連続投稿時
+  useEffect(() => {
+    if (checkFlag.current === 3) {
+      setSentence({
+        ...sentence,
+        quote_sentence: "",
+        memo: "",
+        tags: [],
+      });
+      setTagList([]);
+    }
+  }, [open]);
+
   // 送信時の挙動
   const handleClickOpenSendModal = async () => {
     let sendData = { ...sentence, tags: tagList };
     if (checkFlag.current === 1) {
-      console.log(InfoBook);
       await axios
         .patch(
           `${baseUrl.sentence}/${editingSentence[0].sentence_id}/update`,
@@ -120,18 +153,35 @@ const DetailBook = () => {
         )
         .then((res) => {
           setOpen(true);
-          console.log(res.data.info);
-          setUpdateItem({
-            ...res.data.info,
-            title: editingSentence[0].title,
-            author: editingSentence[0].author,
-            imageUrl: editingSentence[0].imageUrl,
+
+          // AuthContextのsentenceListを更新する
+
+          setSentenceList((prevItems) => {
+            return prevItems.map((oldItem, itemIndex) => {
+              // 該当のオブジェクトにだけ書籍情報を追加
+              if (oldItem.sentence_id === editingSentence[0].sentence_id) {
+                return {
+                  ...oldItem,
+                  quote_sentence: sentence.quote_sentence,
+                  memo: sentence.memo,
+                  tags: tagList,
+                };
+              } else {
+                return { ...oldItem };
+              }
+            });
           });
+
+          // setUpdateItem({
+          //   ...res.data.info,
+          //   title: editingSentence[0].title,
+          //   author: editingSentence[0].author,
+          //   imageUrl: editingSentence[0].imageUrl,
+          // });
+          // updateList();
         })
         .catch((err) => setRegistApiOpen(true));
     } else if (checkFlag.current === 2) {
-      console.log("ISBNから");
-      console.log(InfoBook);
       await axios
         .post(
           `${baseUrl.sentence}/regist`,
@@ -145,7 +195,6 @@ const DetailBook = () => {
         )
         .then((res) => {
           setOpen(true);
-          console.log(res.data.info);
           setUpdateItem({
             ...res.data.info,
             title: isbnResult.title,
@@ -154,8 +203,8 @@ const DetailBook = () => {
           });
         })
         .catch((err) => setRegistApiOpen(true));
+      updateList();
     } else {
-      console.log("連続投稿");
       await axios
         .post(
           `${baseUrl.sentence}/regist`,
@@ -169,8 +218,7 @@ const DetailBook = () => {
         )
         .then((res) => {
           setOpen(true);
-          console.log(res.data.info);
-          setUpdateItem({ ...res.data.info, ...InfoBook });
+          setUpdateItem(Object.assign(res.data.info, InfoBook));
         })
         .catch((err) => setRegistApiOpen(true));
     }
@@ -197,7 +245,6 @@ const DetailBook = () => {
     if (renderFlagRef.current) {
       var formData = new FormData();
       formData.append("image", croppedData);
-      console.log(formData);
       // 画像が切り抜かれたら、画像解析APIを叩いて、コンテンツの文字をゲット
       axios
         .post(`${baseUrl.tool}/character-reader`, formData, {
@@ -206,15 +253,12 @@ const DetailBook = () => {
           },
         })
         .then((res) => {
-          console.log(res.data.info.text);
           setSentence({ ...sentence, quote_sentence: res.data.info.text });
         })
         .catch((err) => {
           setToolApiOpen(true);
         });
-      console.log("画像解析APIを叩くよ");
     } else {
-      console.log("useEffectはまだ動かないよ");
       renderFlagRef.current = true;
     }
 
@@ -287,11 +331,13 @@ const DetailBook = () => {
         <Divider variant="middle" />
         <Typography variant="caption">タグ</Typography>
         <Tags
-          defaultValue={tagList}
+          value={tagList}
           onChange={(e) => {
-            tagList = e.detail.tagify.value.map((item) => {
-              return item.value;
-            });
+            setTagList(
+              e.detail.tagify.value.map((item) => {
+                return item.value;
+              })
+            );
           }}
         />
         <Divider variant="middle" />

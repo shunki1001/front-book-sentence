@@ -1,7 +1,8 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 import { AuthContext } from "../../contexts/AuthContext";
+import axios from "axios";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -37,7 +38,44 @@ const data = (tagApi) => {
 };
 
 const RankOfTag = () => {
-  const { tagApi } = useContext(AuthContext);
+  const [tagApi, setTagApi] = useState([]);
+  const { baseUrl, userid } = useContext(AuthContext);
+
+  useEffect(() => {
+    if (userid) {
+      const updateTag = async () => {
+        const updataTagApi = await axios.get(
+          `${baseUrl.analysis}/${userid}/tag-use-rate`,
+          {
+            headers: {
+              "X-CSRF-ACCESS-TOKEN": document.cookie
+                .match(/csrf_access_token=.{36}/)[0]
+                .split("=")[1],
+            },
+            withCredentials: true,
+          }
+        );
+        setTagApi(updataTagApi.data.info);
+      };
+      updateTag();
+    } else if (localStorage.getItem("user")) {
+      const updateTag = async () => {
+        const updataTagApi = await axios.get(
+          `${baseUrl.analysis}/${localStorage.getItem("user")}/tag-use-rate`,
+          {
+            headers: {
+              "X-CSRF-ACCESS-TOKEN": document.cookie
+                .match(/csrf_access_token=.{36}/)[0]
+                .split("=")[1],
+            },
+            withCredentials: true,
+          }
+        );
+        setTagApi(updataTagApi.data.info);
+      };
+      updateTag();
+    }
+  }, []);
 
   return <Doughnut data={data(tagApi)} />;
 };

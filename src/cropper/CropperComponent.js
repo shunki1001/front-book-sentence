@@ -5,7 +5,7 @@ import "./cropper.css";
 
 import { useState } from "react";
 
-import { Buffer } from "buffer";
+// import { Buffer } from "buffer";
 import { Button, Typography } from "@mui/material";
 
 const defaultSrc =
@@ -13,7 +13,7 @@ const defaultSrc =
 
 export const CropperComponent = (props) => {
   const [image, setImage] = useState(defaultSrc);
-  const [cropData, setCropData] = useState("#");
+  // const [cropData, setCropData] = useState("#");
   const [cropper, setCropper] = useState();
 
   const onChangeProps = (file) => {
@@ -28,7 +28,7 @@ export const CropperComponent = (props) => {
   const getCropData = async () => {
     if (typeof cropper !== "undefined") {
       const croppedUrl = cropper.getCroppedCanvas().toDataURL("image/png");
-      console.log(image);
+      // console.log(image);
       // Base64からバイナリへ変換
       // let bin = Buffer.from(croppedUrl.replace(/^.*,/, ""), "base64");
       var bin = atob(croppedUrl.replace(/^.*,/, ""));
@@ -51,7 +51,7 @@ export const CropperComponent = (props) => {
       //   var formData = new FormData();
       //   formData.append("image", file);
       props.setCroppedData(file);
-      console.log(typeof file);
+      // console.log(typeof file);
       props.setCropModal(false);
     }
   };
@@ -63,10 +63,10 @@ export const CropperComponent = (props) => {
           引用部分の切り抜き
         </Typography>
         <Cropper
-          style={{ height: 300, width: "80%" }}
+          style={{ height: 300, width: "80%", margin: "0 auto" }}
           zoomTo={0.5}
           initialAspectRatio={1}
-          preview=".img-preview"
+          // preview=".img-preview"
           src={image}
           viewMode={1}
           minCropBoxHeight={10}
@@ -83,7 +83,7 @@ export const CropperComponent = (props) => {
         />
       </div>
       <div>
-        <div className="box" style={{ width: "70%" }}>
+        {/* <div className="box" style={{ width: "70%" }}>
           <Typography variant="h2">Preview</Typography>
           <div
             className="img-preview"
@@ -93,7 +93,7 @@ export const CropperComponent = (props) => {
               border: "2px solid #FDFEFE",
             }}
           />
-        </div>
+        </div> */}
         <Button
           style={{
             float: "bottom",

@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 
-import { Box, IconButton, Snackbar } from "@mui/material";
+import { Box, IconButton, Snackbar, Typography } from "@mui/material";
 import SortIcon from "@mui/icons-material/Sort";
 
 import Header from "./components/Header";
@@ -11,6 +11,8 @@ import { AuthContext } from "../contexts/AuthContext";
 import { DataContext } from "../contexts/DataContext";
 
 const MySentence = () => {
+  let counter = 0;
+
   const [openSort, setOpenSort] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [searchValue, setSearchValue] = useState("");
@@ -50,7 +52,6 @@ const MySentence = () => {
         setOpenSort(false);
         break;
       default:
-        console.log("並び替えで実行できない数値が選ばれました");
         break;
     }
   }, [selectedIndex]);
@@ -110,6 +111,11 @@ const MySentence = () => {
           selectedIndex={selectedIndex}
           setSelectedIndex={setSelectedIndex}
         />
+      )}
+      {sortedList.length === 0 && (
+        <Typography sx={{ textAlign: "center" }}>
+          まずは書籍を登録して下さい。
+        </Typography>
       )}
       {sortedList.map((sentence, index) => {
         return <BookComponent sentence={sentence} key={index} />;

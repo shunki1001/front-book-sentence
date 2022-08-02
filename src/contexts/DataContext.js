@@ -5,11 +5,17 @@ import { AuthContext } from "./AuthContext";
 
 export const DataContext = createContext();
 
+const applicationId = "1043368543816196762";
 export const rakutenApi = async (isbn) => {
-  const applicationId = "1043368543816196762";
   return axios.get(
     `https://app.rakuten.co.jp/services/api/BooksBook/Search/20170404?applicationId=${applicationId}&isbn=${isbn}`
   );
+};
+
+export const rakutenApiKeyword = async (keyword) => {
+  const encodedKeyword = encodeURI(keyword);
+  const url = `https://app.rakuten.co.jp/services/api/BooksTotal/Search/20170404?applicationId=${applicationId}&keyword=${encodedKeyword}`;
+  return axios.get(url);
 };
 
 const DataContextProvider = (props) => {
@@ -18,11 +24,8 @@ const DataContextProvider = (props) => {
 
   const [passId, setPassId] = useState("");
 
-  console.log("DataContextが呼び出されました");
-  console.log(sentenceList);
-
   // リストの更新。
-  const updataList = async () => {
+  const updateList = async () => {
     const resSentence = await axios
       .get(`${baseUrl.sentence}/${userid}/list`, {
         headers: {
@@ -30,9 +33,7 @@ const DataContextProvider = (props) => {
         },
         withCredentials: true,
       })
-      .catch((err) => {
-        console.log("センテンス取得失敗");
-      });
+      .catch((err) => {});
     // 取得して、Findで差分がある場合のみ、更新
     let newSenteceList = [];
     for (let i = 0; i < resSentence.data.info.length; i++) {
@@ -43,8 +44,8 @@ const DataContextProvider = (props) => {
         newSenteceList.push(resSentence.data.info[i]);
       }
     }
-    console.log(newSenteceList);
-    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     // 楽天取得(本番用)
     // resSentence.data.info.forEach((item, resIndex) => {
@@ -117,6 +118,7 @@ const DataContextProvider = (props) => {
     setIsbnResult,
     flagWhereFrom,
     checkFlag,
+    updateList,
   };
 
   return (
