@@ -71,7 +71,7 @@ const Signup = () => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     axios
-      .post(`${baseUrl}/regist`, {
+      .post(`${baseUrl.user}/regist`, {
         mail_addr: data.get("email"),
         password: data.get("password"),
         name: data.get("name"),
@@ -83,7 +83,7 @@ const Signup = () => {
         setSuccessModalOpen(true);
         login(data.get("email"), data.get("password"));
         setTimeout(() => {
-          navigate("/mysentence", { replace: true });
+          navigate("/", { replace: true });
         }, 5000);
       })
       .catch((err) => {

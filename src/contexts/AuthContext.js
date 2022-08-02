@@ -7,12 +7,13 @@ import noimage from "../static/images/noimage2.png";
 export const AuthContext = createContext();
 
 const AuthContextProvider = (props) => {
+  const apiRoot = "";
   const baseUrl = {
-    user: "/book-sentence-api/api/user",
-    sentence: "/book-sentence-api/api/sentence",
-    tool: "/book-sentence-api/tools",
-    analysis: "/book-sentence-api/api/analysis",
-    auth: "/book-sentence-api/auth",
+    user: apiRoot + "/book-sentence-api/api/user",
+    sentence: apiRoot + "/book-sentence-api/api/sentence",
+    tool: apiRoot + "/book-sentence-api/tools",
+    analysis: apiRoot + "/book-sentence-api/api/analysis",
+    auth: apiRoot + "/book-sentence-api/auth",
   };
   // ログイン情報
   const [loading, setLoading] = useState(false);
@@ -124,7 +125,7 @@ const AuthContextProvider = (props) => {
             },
             withCredentials: true,
           })
-          .catch((err) => {});
+          .catch((err) => { });
         setSentenceList(resSentence.data.info);
 
         // 楽天取得(本番用)
@@ -216,7 +217,7 @@ const AuthContextProvider = (props) => {
           location.pathname === "/signin" ||
           location.pathname === "/signup"
         ) {
-          navigate("/mysentence", { replace: true });
+          navigate("/", { replace: true });
         }
       };
       getSentece();
