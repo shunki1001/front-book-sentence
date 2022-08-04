@@ -1,6 +1,6 @@
 import React from "react";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
-import { Box, Button, Dialog, Typography } from "@mui/material";
+import { Box, Button, Dialog, Snackbar, Typography } from "@mui/material";
 import { useState, useEffect, useRef, useContext } from "react";
 import Scanner from "../../scanner/Scanner";
 import "../../scanner/scanner.css";
@@ -46,6 +46,9 @@ export const UploadLabelByBarcode = (props) => {
 
   const [error, setError] = useState(false);
 
+  const [errorOpen, setErrorOpen] = useState(false);
+  const [snackMessage, setSnackMessage] = useState("");
+
   const [imageBarcode, setImageBarcode] = useState();
 
   const { flagWhereFrom, setIsbnResult } = useContext(DataContext);
@@ -67,10 +70,16 @@ export const UploadLabelByBarcode = (props) => {
 
   const getRakutenISBN = async (readISBN) => {
     const res = await rakutenApi(readISBN).catch((error) => {
-      alert("書籍情報の取得に失敗しました");
+      setSnackMessage("書籍情報の取得に失敗しました");
+      setErrorOpen(true);
+      setCamera(true);
+      setInfoOpen(false);
     });
     if (res.data.Items.length == 0) {
-      alert("書籍情報がないため、情報なしとして登録してください");
+      setSnackMessage("書籍情報がないため、情報なしとして登録してください");
+      setErrorOpen(true);
+      setCamera(true);
+      setInfoOpen(false);
       authorName = "情報なし";
       bookName = "情報なし";
       image = noimage;
@@ -87,12 +96,13 @@ export const UploadLabelByBarcode = (props) => {
   const renderFlagRef = useRef(false);
   useEffect(() => {
     if (renderFlagRef.current) {
-      if (result.length == 13 && result.slice(0, 4) == "978") {
+      if (result.length == 13 && result.slice(0, 3) == "978") {
         getRakutenISBN(result);
       } else {
-        alert(
+        setSnackMessage(
           "978で始まるバーコードのみ読み取られるようにして、もう一度試してみてください"
         );
+        setErrorOpen(true);
         setError(!error);
         setCamera(true);
         setInfoOpen(false);
@@ -144,6 +154,8 @@ export const UploadLabelByBarcode = (props) => {
           image={imageBarcode}
           error={error}
           setError={setError}
+          setSnackMessage={setSnackMessage}
+          setErrorOpen={setErrorOpen}
         />
       </Dialog>
       <Dialog open={infoOpen} onClose={handleCloseInfo}>
@@ -168,6 +180,12 @@ export const UploadLabelByBarcode = (props) => {
           </Box>
         </Box>
       </Dialog>
+      <Snackbar
+        message={snackMessage}
+        open={errorOpen}
+        onClose={() => setErrorOpen(false)}
+        autoHideDuration={6000}
+      />
     </>
   );
 };
