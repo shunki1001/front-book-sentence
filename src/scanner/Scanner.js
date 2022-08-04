@@ -3,7 +3,8 @@ import config from "./scannerConfig.json";
 import Quagga from "quagga";
 
 const Scanner = (props) => {
-  const { onDetected, image, error, setError } = props;
+  const { onDetected, image, error, setError, setSnackMessage, setErrorOpen } =
+    props;
 
   useEffect(() => {
     // console.log(URL.createObjectURL(image));
@@ -68,7 +69,8 @@ const Scanner = (props) => {
       },
       function (result) {
         if (result === undefined) {
-          alert("バーコードが読み取れません");
+          setSnackMessage("バーコードが読み取れません");
+          setErrorOpen(true);
           setError(!error);
         }
       }
