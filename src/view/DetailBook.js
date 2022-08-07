@@ -251,6 +251,7 @@ const DetailBook = () => {
           headers: {
             "X-CSRF-ACCESS-TOKEN": token,
           },
+          withCredentials: true,
         })
         .then((res) => {
           setSentence({ ...sentence, quote_sentence: res.data.info.text });
