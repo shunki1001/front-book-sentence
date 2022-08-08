@@ -1,6 +1,7 @@
 import axios from "axios";
 import React from "react";
 import { createContext, useContext, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "./AuthContext";
 
 export const DataContext = createContext();
@@ -19,10 +20,12 @@ export const rakutenApiKeyword = async (keyword) => {
 };
 
 const DataContextProvider = (props) => {
-  const { userid, sentenceList, setSentenceList, baseUrl, token } =
+  const { userid, sentenceList, setSentenceList, baseUrl, token, logout } =
     useContext(AuthContext);
 
   const [passId, setPassId] = useState("");
+
+  const navigate = useNavigate();
 
   // リストの更新。
   const updateList = async () => {
@@ -33,7 +36,12 @@ const DataContextProvider = (props) => {
         },
         withCredentials: true,
       })
-      .catch((err) => {});
+      .catch((err) => {
+        if (err.response.status == "403" || err.response.status == "401") {
+          logout();
+          navigate("/signin");
+        }
+      });
     // 取得して、Findで差分がある場合のみ、更新
     let newSenteceList = [];
     for (let i = 0; i < resSentence.data.info.length; i++) {

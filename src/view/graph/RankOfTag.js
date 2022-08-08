@@ -3,6 +3,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 import { AuthContext } from "../../contexts/AuthContext";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -39,38 +40,50 @@ const data = (tagApi) => {
 
 const RankOfTag = () => {
   const [tagApi, setTagApi] = useState([]);
-  const { baseUrl, userid } = useContext(AuthContext);
+  const { baseUrl, userid, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (userid) {
       const updateTag = async () => {
-        const updataTagApi = await axios.get(
-          `${baseUrl.analysis}/${userid}/tag-use-rate`,
-          {
+        const updataTagApi = await axios
+          .get(`${baseUrl.analysis}/${userid}/tag-use-rate`, {
             headers: {
               "X-CSRF-ACCESS-TOKEN": document.cookie
                 .match(/csrf_access_token=.{36}/)[0]
                 .split("=")[1],
             },
             withCredentials: true,
-          }
-        );
+          })
+          .catch((err) => {
+            if (err.response.status == "403" || err.response.status == "401") {
+              logout();
+              navigate("/signin");
+            }
+          });
         setTagApi(updataTagApi.data.info);
       };
       updateTag();
     } else if (localStorage.getItem("user")) {
       const updateTag = async () => {
-        const updataTagApi = await axios.get(
-          `${baseUrl.analysis}/${localStorage.getItem("user")}/tag-use-rate`,
-          {
-            headers: {
-              "X-CSRF-ACCESS-TOKEN": document.cookie
-                .match(/csrf_access_token=.{36}/)[0]
-                .split("=")[1],
-            },
-            withCredentials: true,
-          }
-        );
+        const updataTagApi = await axios
+          .get(
+            `${baseUrl.analysis}/${localStorage.getItem("user")}/tag-use-rate`,
+            {
+              headers: {
+                "X-CSRF-ACCESS-TOKEN": document.cookie
+                  .match(/csrf_access_token=.{36}/)[0]
+                  .split("=")[1],
+              },
+              withCredentials: true,
+            }
+          )
+          .catch((err) => {
+            if (err.response.status == "403" || err.response.status == "401") {
+              logout();
+              navigate("/signin");
+            }
+          });
         setTagApi(updataTagApi.data.info);
       };
       updateTag();

@@ -35,15 +35,8 @@ let InfoBook = {};
 const DetailBook = () => {
   const { editingSentence, isbnResult, checkFlag, updateList } =
     useContext(DataContext);
-  const {
-    baseUrl,
-    token,
-    userid,
-    updateItem,
-    setUpdateItem,
-    setSentenceList,
-    sentenceList,
-  } = useContext(AuthContext);
+  const { baseUrl, token, userid, setUpdateItem, setSentenceList, logout } =
+    useContext(AuthContext);
 
   const navigate = useNavigate();
 
@@ -180,7 +173,13 @@ const DetailBook = () => {
           // });
           // updateList();
         })
-        .catch((err) => setRegistApiOpen(true));
+        .catch((err) => {
+          setRegistApiOpen(true);
+          if (err.response.status == "403" || err.response.status == "401") {
+            logout();
+            navigate("/signin");
+          }
+        });
     } else if (checkFlag.current === 2) {
       await axios
         .post(
@@ -202,7 +201,13 @@ const DetailBook = () => {
             imageUrl: isbnResult.imageUrl,
           });
         })
-        .catch((err) => setRegistApiOpen(true));
+        .catch((err) => {
+          setRegistApiOpen(true);
+          if (err.response.status == "403" || err.response.status == "401") {
+            logout();
+            navigate("/signin");
+          }
+        });
       updateList();
     } else {
       await axios
@@ -220,7 +225,13 @@ const DetailBook = () => {
           setOpen(true);
           setUpdateItem(Object.assign(res.data.info, InfoBook));
         })
-        .catch((err) => setRegistApiOpen(true));
+        .catch((err) => {
+          setRegistApiOpen(true);
+          if (err.response.status == "403" || err.response.status == "401") {
+            logout();
+            navigate("/signin");
+          }
+        });
     }
   };
   const handleClose = () => {
@@ -258,6 +269,10 @@ const DetailBook = () => {
         })
         .catch((err) => {
           setToolApiOpen(true);
+          if (err.response.status == "403" || err.response.status == "401") {
+            logout();
+            navigate("/signin");
+          }
         });
     } else {
       renderFlagRef.current = true;

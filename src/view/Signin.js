@@ -22,7 +22,14 @@ const SigninTextField = styled(TextField)({
 });
 
 const Signin = () => {
-  const { login, tryLogin, loading, setLoading } = useContext(AuthContext);
+  const {
+    login,
+    tryLogin,
+    loading,
+    setLoading,
+    sessionError,
+    setSessionError,
+  } = useContext(AuthContext);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -80,6 +87,12 @@ const Signin = () => {
         open={loading}
         onClose={() => setLoading(false)}
         message="ログイン成功。書籍情報を読み込んでいます。このままお待ちください。"
+      />
+      <Snackbar
+        open={sessionError}
+        onClose={() => setSessionError(false)}
+        message="セッションエラー。再ログインしてください"
+        autoHideDuration={6000}
       />
     </Box>
   );

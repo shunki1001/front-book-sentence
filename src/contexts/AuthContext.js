@@ -29,6 +29,9 @@ const AuthContextProvider = (props) => {
   const [updateItem, setUpdateItem] = useState({});
   const [tagApi, setTagApi] = useState([]);
 
+  // sessionエラー時モーダル
+  const [sessionError, setSessionError] = useState(false);
+
   // リダイレクト
   const navigate = useNavigate();
   const location = useLocation();
@@ -125,7 +128,12 @@ const AuthContextProvider = (props) => {
             },
             withCredentials: true,
           })
-          .catch((err) => { });
+          .catch((err) => {
+            if (err.response.status == "403" || err.response.status == "401") {
+              logout();
+              navigate("/signin");
+            }
+          });
         setSentenceList(resSentence.data.info);
 
         // 楽天取得(本番用)
@@ -211,7 +219,7 @@ const AuthContextProvider = (props) => {
         //     });
         // };
 
-        // setInterval(getRefreshToken, 1800 * 1000);
+        // setInterval(getRefreshToken, 60 * 1000);
 
         if (
           location.pathname === "/signin" ||
@@ -260,8 +268,8 @@ const AuthContextProvider = (props) => {
 
   const logout = () => {
     localStorage.removeItem("user");
-    localStorage.removeItem("mail");
-    localStorage.removeItem("password");
+    setUserid("");
+    setSessionError(true);
   };
 
   const value = {
@@ -278,6 +286,8 @@ const AuthContextProvider = (props) => {
     updateItem,
     setUpdateItem,
     tagApi,
+    sessionError,
+    setSessionError,
   };
 
   return (
