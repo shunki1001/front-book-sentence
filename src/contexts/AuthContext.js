@@ -1,19 +1,19 @@
 import axios from "axios";
 import React, { createContext, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { config } from "../config";
 import { rakutenApi } from "./DataContext";
 import noimage from "../static/images/noimage2.png";
 
 export const AuthContext = createContext();
 
 const AuthContextProvider = (props) => {
-  const apiRoot = "/book-sentence-api";
   const baseUrl = {
-    user: apiRoot + "/api/user",
-    sentence: apiRoot + "/api/sentence",
-    tool: apiRoot + "/tools",
-    analysis: apiRoot + "/api/analysis",
-    auth: apiRoot + "/auth",
+    user: config.apiRoot + "/api/user",
+    sentence: config.apiRoot + "/api/sentence",
+    tool: config.apiRoot + "/tools",
+    analysis: config.apiRoot + "/api/analysis",
+    auth: config.apiRoot + "/auth",
   };
   // ログイン情報
   const [loading, setLoading] = useState(false);
