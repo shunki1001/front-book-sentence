@@ -56,6 +56,12 @@ export const CropperComponent = (props) => {
     }
   };
 
+  const rotateCrop = async (angle) => {
+    if (typeof cropper === 'undefined') return;
+
+    cropper.rotate(angle);
+  }
+
   return (
     <div>
       <div style={{ width: "100%" }}>
@@ -69,18 +75,34 @@ export const CropperComponent = (props) => {
           // preview=".img-preview"
           src={image}
           viewMode={1}
+          dragMode={'none'}
+          guides={false}
           minCropBoxHeight={10}
           minCropBoxWidth={10}
           background={false}
           responsive={true}
           autoCropArea={1}
           zoomable={false}
+          scalable={false}
+          center={false}
           checkOrientation={false} // https://github.com/fengyuanchen/cropperjs/issues/671
           onInitialized={(instance) => {
             setCropper(instance);
+            instance.reset();
           }}
-          guides={true}
         />
+      </div>
+      <div>
+        <Button
+          onClick={ () => rotateCrop(-1) }
+        >
+          ←
+        </Button>
+        <Button
+          onClick={() => rotateCrop(1)}
+        >
+          →
+        </Button>
       </div>
       <div>
         {/* <div className="box" style={{ width: "70%" }}>
