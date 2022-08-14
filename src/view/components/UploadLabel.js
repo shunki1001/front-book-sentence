@@ -18,6 +18,7 @@ const UploadLabelStyle = {
 };
 
 const UploadLabel = (props) => {
+  let capture = props.capture ? props.capture : '';
   return (
     <label style={UploadLabelStyle}>
       <UploadFileIcon />
@@ -27,6 +28,7 @@ const UploadLabel = (props) => {
         style={{ display: "none" }}
         onChange={props.onChange}
         accept="image/*"
+        capture={capture}
         id={`upload-button-${props.name}`}
       />
     </label>
@@ -146,7 +148,7 @@ export const UploadLabelByBarcode = (props) => {
 
   return (
     <>
-      <UploadLabel name="barcode" onChange={handleChangeBarcode} />
+      <UploadLabel name="barcode" capture="camera" onChange={handleChangeBarcode} />
 
       <Dialog open={camera} onClose={handleCloseCamera}>
         <Scanner
