@@ -34,8 +34,8 @@
   },
   "scripts": {
     "start": "set HTTPS=true&&react-scripts start",
-    "build": "GENERATE_SOURCEMAP=false react-scripts build",
-    "devBuild": "BUILD_PATH='./devBuild' react-scripts build",
+    "build": "set GENERATE_SOURCEMAP=false&&react-scripts build",
+    "devBuild": "set BUILD_PATH='./devBuild'&&react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
