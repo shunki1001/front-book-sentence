@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { createContext, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import jwt_decode from "jwt-decode";
 import { config } from "../config";
 import { rakutenApi } from "./DataContext";
 import noimage from "../static/images/noimage2.png";
@@ -33,12 +34,16 @@ const AuthContextProvider = (props) => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // トークン有効期限を保持させる
+  const setTokenExpire = async (accessToken) => {
+    const tokenPayload = jwt_decode(accessToken);
+    localStorage.setItem('access_exp', tokenPayload.exp);
+  }
+
   // すでにログインがあるかどうか確認
   useEffect(() => {
-    // if (localStorage.getItem("user")) {
-    //   login(localStorage.getItem("mail"), localStorage.getItem("password"));
-    // }
-    if (document.cookie) {
+    const exp = localStorage.getItem('access_exp');
+    if (document.cookie && ((exp * 1000) <= (new Date().getTime()))) {
       if (document.cookie.match(/csrf_refresh_token=.{36}/)[0].split("=")[1]) {
         const getRefreshToken = async () => {
           await axios
@@ -47,9 +52,7 @@ const AuthContextProvider = (props) => {
               {},
               {
                 headers: {
-                  "X-CSRF-REFRESH-TOKEN": document.cookie
-                    .match(/csrf_refresh_token=.{36}/)[0]
-                    .split("=")[1],
+                  "X-CSRF-REFRESH-TOKEN": refreshToken,
                 },
                 withCredentials: true,
               }
@@ -69,6 +72,7 @@ const AuthContextProvider = (props) => {
                   .match(/csrf_refresh_token=.{36}/)[0]
                   .split("=")[1]
               );
+              setTokenExpire(res.data.access_token);
               if (localStorage.getItem("user")) {
                 setUserid(localStorage.getItem("user"));
               } else {
@@ -81,7 +85,7 @@ const AuthContextProvider = (props) => {
         navigate("/signin", { replace: true });
       }
     }
-  }, []);
+  });
 
   // ログイン関数
   const login = async (mail, password) => {
@@ -110,6 +114,7 @@ const AuthContextProvider = (props) => {
     // 初回ログイン時にログインした情報をローカルストレージに保存
     if (!localStorage.getItem("user")) {
       localStorage.setItem("user", resToken.data.info.user_id);
+      setTokenExpire(resToken.data.access_token);
     }
   };
 
@@ -259,6 +264,7 @@ const AuthContextProvider = (props) => {
   // }, [userid]);
 
   const logout = () => {
+    setUserid("");
     localStorage.removeItem("user");
     localStorage.removeItem("mail");
     localStorage.removeItem("password");

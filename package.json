@@ -20,6 +20,7 @@
     "axios-cookiejar-support": "^4.0.2",
     "buffer": "^6.0.3",
     "date-fns": "^2.28.0",
+    "jwt-decode": "^3.1.2",
     "quagga": "^0.12.1",
     "quagga-scanner": "^0.13.0",
     "react": "^18.1.0",
@@ -35,6 +36,7 @@
   "scripts": {
     "start": "set HTTPS=true&&react-scripts start",
     "build": "set GENERATE_SOURCEMAP=false&&react-scripts build",
+    "build:test": "set GENERATE_SOURCEMAP=false&&dotenv -e .env.test react-scripts build",
     "devBuild": "set BUILD_PATH='./devBuild'&&react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -56,5 +58,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "dotenv-cli": "^6.0.0"
   }
 }
