@@ -35,9 +35,9 @@
   },
   "scripts": {
     "start": "set HTTPS=true&&react-scripts start",
-    "build": "set GENERATE_SOURCEMAP=false&&react-scripts build",
-    "build:test": "set GENERATE_SOURCEMAP=false&&dotenv -e .env.test react-scripts build",
-    "devBuild": "set BUILD_PATH='./devBuild'&&react-scripts build",
+    "build": "react-scripts build",
+    "build:debug": "set GENERATE_SOURCEMAP=true&&set BUILD_PATH=private-build/debug&&react-scripts build",
+    "build:test": "set GENERATE_SOURCEMAP=true&&set BUILD_PATH=private-build/test&&dotenv -e .env.test react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

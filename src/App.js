@@ -12,10 +12,11 @@ import AuthContextProvider from "./contexts/AuthContext";
 import ProtectedRoute from "./ProtectedRoute";
 import { CookiesProvider } from "react-cookie";
 import DataContextProvider from "./contexts/DataContext";
+import { config } from "./config";
 
 function App() {
   return (
-    <BrowserRouter basename="/">
+    <BrowserRouter basename={config.routeBase}>
       <AuthContextProvider>
         <DataContextProvider>
           <CookiesProvider>
