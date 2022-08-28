@@ -26,7 +26,7 @@ const AuthContextProvider = (props) => {
   const [token, setToken] = useState("");
   const [refreshToken, setRefreshToken] = useState("");
   // センテンス情報格納
-  const [sentenceList, setSentenceList] = useState([]);
+  const [sentenceList, setSentenceList] = useState(localStorage.getItem('sentenceList') ? JSON.parse(localStorage.getItem('sentenceList')) : []);
   const [updateItem, setUpdateItem] = useState({});
   const [tagApi, setTagApi] = useState([]);
 
@@ -121,6 +121,8 @@ const AuthContextProvider = (props) => {
   // 初回レンダリングで走らせないためのフラグ
   const renderFlagRef = useRef(false);
   useEffect(() => {
+    if (userid === '') return;
+
     if (renderFlagRef.current) {
       const getSentece = async () => {
         const resSentence = await axios
@@ -132,6 +134,7 @@ const AuthContextProvider = (props) => {
           })
           .catch((err) => { });
         setSentenceList(resSentence.data.info);
+        localStorage.setItem('sentenceList', JSON.stringify(resSentence.data.info));
 
         // 楽天取得(本番用)
         // setLoading(true);
@@ -238,6 +241,7 @@ const AuthContextProvider = (props) => {
     // 逆に登録の場合、sentence_idをもっているから、リストに追加
     if (updateItem.sentence_id) {
       setSentenceList([...sentenceList, updateItem]);
+      localStorage.setItem('sentenceList', JSON.stringify(sentenceList));
     }
   }, [updateItem]);
 
@@ -268,6 +272,7 @@ const AuthContextProvider = (props) => {
     localStorage.removeItem("user");
     localStorage.removeItem("mail");
     localStorage.removeItem("password");
+    localStorage.removeItem("sentenceList");
   };
 
   const value = {
