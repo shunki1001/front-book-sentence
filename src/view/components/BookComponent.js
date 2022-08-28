@@ -61,7 +61,7 @@ const BookComponent = (props) => {
         <Box sx={{ width: "9%", pl: 1, my: 4 }}>
           {" "}
           {/* 45/650=0.069 */}
-          <BookFace src={props.sentence.imageUrl} />
+          <BookFace src={('book' in props.sentence) ? props.sentence.book.image_url : ''} />
         </Box>
         <Box sx={{ width: "38%", ml: 4, my: 1 }}>
           {" "}

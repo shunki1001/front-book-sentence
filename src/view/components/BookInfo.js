@@ -13,19 +13,19 @@ const BookInfo = (props) => {
         {props.rakuten ? (
           <BookFace src={props.sentence.Item.mediumImageUrl} />
         ) : (
-          <BookFace src={props.sentence.imageUrl} />
+            <BookFace src={('book' in props.sentence) ? props.sentence.book.image_url : ''} />
         )}
       </Box>
       <Box sx={{ my: 1, width: "67%" }}>
         {props.rakuten ? (
           <Typography variant="h6">{props.sentence.Item.title}</Typography>
         ) : (
-          <Typography variant="h6">{props.sentence.title}</Typography>
+            <Typography variant="h6">{('book' in props.sentence) ? props.sentence.book.title : ''}</Typography>
         )}
         {props.rakuten ? (
           <Typography variant="p">{props.sentence.Item.author}</Typography>
         ) : (
-          <Typography variant="p">{props.sentence.author}</Typography>
+          <Typography variant="p">{('book' in props.sentence) ? props.sentence.book.author : ''}</Typography>
         )}
       </Box>
     </Box>
