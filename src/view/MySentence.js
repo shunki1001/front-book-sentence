@@ -70,10 +70,11 @@ const MySentence = () => {
       // 正規表現に変数を使う時に必要なRegExp
       let seachValueRegExp = new RegExp(searchValue, "g");
       let searchedList = sentenceList.filter((item) => {
+        let hasBook = ('book' in item);
         return (
-          item.title.match(seachValueRegExp) ||
+          (hasBook && item.book.title.match(seachValueRegExp)) ||
           item.quote_sentence.match(seachValueRegExp) ||
-          item.author.match(seachValueRegExp) ||
+          (hasBook && item.book.author.match(seachValueRegExp)) ||
           item.memo.match(seachValueRegExp)
         );
       });
