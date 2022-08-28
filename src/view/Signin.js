@@ -8,6 +8,7 @@ import {
   Link,
   Snackbar,
 } from "@mui/material";
+import { Link as RouterLink } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
 
@@ -61,7 +62,7 @@ const Signin = () => {
         id="password"
         autoComplete="current-password"
       />
-      <Link href="#" variant="body2">
+      <Link to="#" component={ RouterLink } variant="body2">
         Forgot password?
       </Link>
       {tryLogin ? (
@@ -73,8 +74,8 @@ const Signin = () => {
         Sign In
       </Button>
       <Typography>Don't have an account?</Typography>
-      <Link href="/signup" variant="body2">
-        {"Sign Up"}
+      <Link to="/signup" component={RouterLink} variant="body2">
+        Sign Up
       </Link>
       <Snackbar
         open={loading}
