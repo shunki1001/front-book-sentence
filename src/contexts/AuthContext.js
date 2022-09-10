@@ -121,118 +121,116 @@ const AuthContextProvider = (props) => {
   // 初回レンダリングで走らせないためのフラグ
   const renderFlagRef = useRef(false);
   useEffect(() => {
-    if (userid === '') return;
-
-    if (renderFlagRef.current) {
-      const getSentece = async () => {
-        const resSentence = await axios
-          .get(`${baseUrl.sentence}/${userid}/list`, {
-            headers: {
-              "X-CSRF-ACCESS-TOKEN": token,
-            },
-            withCredentials: true,
-          })
-          .catch((err) => { });
-        setSentenceList(resSentence.data.info);
-        localStorage.setItem('sentenceList', JSON.stringify(resSentence.data.info));
-
-        // 楽天取得(本番用)
-        // setLoading(true);
-        // resSentence.data.info.forEach((item, resIndex) => {
-        //   // 楽天APIが1秒間隔の通信より早いとアクセス制限かけられるから
-        //   // 1秒毎に実行=>setTimeout
-        //   setTimeout(() => {
-        //     rakutenApi(item.isbn)
-        //       .then((res) => {
-        //         // 本の情報を取得できた場合
-        //         console.log(res.data.Items[0].Item.author);
-        //         setSentenceList((prevItems) => {
-        //           return prevItems.map((oldItem, itemIndex) => {
-        //             // 該当のオブジェクトにだけ書籍情報を追加
-        //             if (resIndex === itemIndex) {
-        //               return {
-        //                 ...oldItem,
-        //                 author: res.data.Items[0].Item.author,
-        //                 title: res.data.Items[0].Item.title,
-        //                 imageUrl: res.data.Items[0].Item.mediumImageUrl,
-        //               };
-        //             } else {
-        //               return { ...oldItem };
-        //             }
-        //           });
-        //         });
-        //       })
-        //       .catch((err) => {
-        //         // 本の情報を取得できなかった場合
-        //         setSentenceList((prevItems) => {
-        //           return prevItems.map((oldItem, itemIndex) => {
-        //             // 該当のオブジェクトにだけ書籍情報を追加
-        //             if (resIndex === itemIndex) {
-        //               return {
-        //                 ...oldItem,
-        //                 author: "書籍情報なし",
-        //                 title: "書籍情報なし",
-        //                 imageUrl: noimage,
-        //               };
-        //             } else {
-        //               return { ...oldItem };
-        //             }
-        //           });
-        //         });
-        //       });
-        //   }, resIndex * 800 + 800);
-        // });
-
-        // await new Promise((resolve) =>
-        //   setTimeout(resolve, resSentence.data.info.length * 800 + 500)
-        // );
-        // console.clear();
-        // setLoading(false);
-
-        // const getRefreshToken = async () => {
-        //   console.log(refreshToken);
-        //   await axios
-        //     .post(
-        //       `${baseUrl.auth}/refresh`,
-        //       {},
-        //       {
-        //         headers: {
-        //           "X-CSRF-REFRESH-TOKEN": refreshToken,
-        //         },
-        //         withCredentials: true,
-        //       }
-        //     )
-        //     .catch((err) => {
-        //       console.log("アクセストークン更新失敗");
-        //     })
-        //     .then(() => {
-        //       setToken(
-        //         document.cookie
-        //           .match(/csrf_access_token=.{36}/)[0]
-        //           .split("=")[1]
-        //       );
-        //       setRefreshToken(
-        //         document.cookie
-        //           .match(/csrf_refresh_token=.{36}/)[0]
-        //           .split("=")[1]
-        //       );
-        //     });
-        // };
-
-        // setInterval(getRefreshToken, 1800 * 1000);
-
-        if (
-          location.pathname === "/signin" ||
-          location.pathname === "/signup"
-        ) {
-          navigate("/", { replace: true });
-        }
-      };
-      getSentece();
-    } else {
-      // console.log("useEffectはまだ動かないよ");
+    if (userid === '') {
       renderFlagRef.current = true;
+      return;
     }
+
+    const getSentece = async () => {
+      const resSentence = await axios
+        .get(`${baseUrl.sentence}/${userid}/list`, {
+          headers: {
+            "X-CSRF-ACCESS-TOKEN": token,
+          },
+          withCredentials: true,
+        })
+        .catch((err) => { });
+      setSentenceList(resSentence.data.info);
+      localStorage.setItem('sentenceList', JSON.stringify(resSentence.data.info));
+
+      // 楽天取得(本番用)
+      // setLoading(true);
+      // resSentence.data.info.forEach((item, resIndex) => {
+      //   // 楽天APIが1秒間隔の通信より早いとアクセス制限かけられるから
+      //   // 1秒毎に実行=>setTimeout
+      //   setTimeout(() => {
+      //     rakutenApi(item.isbn)
+      //       .then((res) => {
+      //         // 本の情報を取得できた場合
+      //         console.log(res.data.Items[0].Item.author);
+      //         setSentenceList((prevItems) => {
+      //           return prevItems.map((oldItem, itemIndex) => {
+      //             // 該当のオブジェクトにだけ書籍情報を追加
+      //             if (resIndex === itemIndex) {
+      //               return {
+      //                 ...oldItem,
+      //                 author: res.data.Items[0].Item.author,
+      //                 title: res.data.Items[0].Item.title,
+      //                 imageUrl: res.data.Items[0].Item.mediumImageUrl,
+      //               };
+      //             } else {
+      //               return { ...oldItem };
+      //             }
+      //           });
+      //         });
+      //       })
+      //       .catch((err) => {
+      //         // 本の情報を取得できなかった場合
+      //         setSentenceList((prevItems) => {
+      //           return prevItems.map((oldItem, itemIndex) => {
+      //             // 該当のオブジェクトにだけ書籍情報を追加
+      //             if (resIndex === itemIndex) {
+      //               return {
+      //                 ...oldItem,
+      //                 author: "書籍情報なし",
+      //                 title: "書籍情報なし",
+      //                 imageUrl: noimage,
+      //               };
+      //             } else {
+      //               return { ...oldItem };
+      //             }
+      //           });
+      //         });
+      //       });
+      //   }, resIndex * 800 + 800);
+      // });
+
+      // await new Promise((resolve) =>
+      //   setTimeout(resolve, resSentence.data.info.length * 800 + 500)
+      // );
+      // console.clear();
+      // setLoading(false);
+
+      // const getRefreshToken = async () => {
+      //   console.log(refreshToken);
+      //   await axios
+      //     .post(
+      //       `${baseUrl.auth}/refresh`,
+      //       {},
+      //       {
+      //         headers: {
+      //           "X-CSRF-REFRESH-TOKEN": refreshToken,
+      //         },
+      //         withCredentials: true,
+      //       }
+      //     )
+      //     .catch((err) => {
+      //       console.log("アクセストークン更新失敗");
+      //     })
+      //     .then(() => {
+      //       setToken(
+      //         document.cookie
+      //           .match(/csrf_access_token=.{36}/)[0]
+      //           .split("=")[1]
+      //       );
+      //       setRefreshToken(
+      //         document.cookie
+      //           .match(/csrf_refresh_token=.{36}/)[0]
+      //           .split("=")[1]
+      //       );
+      //     });
+      // };
+
+      // setInterval(getRefreshToken, 1800 * 1000);
+
+      if (
+        location.pathname === "/signin" ||
+        location.pathname === "/signup"
+      ) {
+        navigate("/", { replace: true });
+      }
+    };
+    getSentece();
   }, [userid]);
 
   // updateされた時に、リストにアップデート項目
